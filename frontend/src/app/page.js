@@ -47,7 +47,6 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState([]);
   const [banners, setBanners] = useState([]);
   const [loadingCars, setLoadingCars] = useState(true);
-  const [loadingBanners, setLoadingBanners] = useState(true);
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
   // Search Bar State
@@ -60,14 +59,12 @@ export default function HomePage() {
   const [availableModels, setAvailableModels] = useState([]);
 
   // Embla Carousels
-  const [bannerRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
+  const [bannerRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
   const [testiRef, testiApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' });
 
-  // Testimonial Controls
   const scrollPrev = useCallback(() => testiApi && testiApi.scrollPrev(), [testiApi]);
   const scrollNext = useCallback(() => testiApi && testiApi.scrollNext(), [testiApi]);
 
-  // Fetch Data
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
@@ -93,7 +90,6 @@ export default function HomePage() {
         console.error('Error fetching home data');
       } finally {
         setLoadingCars(false);
-        setLoadingBanners(false);
         setLoadingTestimonials(false);
       }
     };
@@ -131,89 +127,88 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ════ SECTION 1: HERO (2-col layout) ════ */}
-      <section className="relative min-h-[100vh] flex items-center pt-20">
+      {/* ════ SECTION 1: HERO (Premium 2-col layout) ════ */}
+      <section className="relative min-h-[100vh] flex items-center pt-24 overflow-hidden">
+        {/* Background & Overlays */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop"
-            alt="Luxury Car Showroom"
+            alt="Luxury Showroom"
             fill
             priority={true}
-            className="object-cover"
-            quality={90}
+            className="object-cover scale-105 transform origin-center animate-[subtle-zoom_20s_ease-out_forwards]"
+            quality={100}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a12] via-[#0a0a12]/80 to-transparent sm:via-[#0a0a12]/90 sm:to-[#0a0a12]/30" />
+          {/* Deep cinematic gradient fade */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#05050A] via-[#05050A]/95 to-[#05050A]/40" />
+          {/* Ambient Glow */}
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
         </div>
 
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Col (Text) */}
-            <div className="lg:col-span-7 pb-16 lg:pb-0">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 rounded-full text-white text-xs font-bold uppercase tracking-widest mb-6 shadow-lg shadow-purple-900/20">
-                  <span className="text-yellow-300">⭐</span> Premium Car Dealership
+            {/* Left Col (Typography) */}
+            <div className="lg:col-span-7 pb-20 lg:pb-0">
+              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-white/[0.05] backdrop-blur-xl rounded-full text-slate-300 text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
+                  <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" /> Premium Car Dealership
                 </div>
               </motion.div>
 
               <motion.h1 
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-5xl md:text-7xl text-white font-bold leading-[1.1] tracking-tight mb-6"
+                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="text-6xl md:text-[84px] text-white font-bold leading-[1.05] tracking-tighter mb-8"
                 style={{ fontFamily: 'var(--font-outfit)' }}
               >
                 Find Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">Perfect Car</span> <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-300 to-purple-500">Perfect Car</span> <br />
                 In Surat
               </motion.h1>
 
               <motion.p 
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-[16px] md:text-[18px] text-gray-300 max-w-md mb-8 leading-relaxed font-sans"
+                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="text-lg md:text-xl text-slate-400 max-w-lg mb-10 leading-relaxed font-light"
               >
-                Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
+                Experience Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
               </motion.p>
 
               <motion.div 
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-wrap items-center gap-4"
+                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-wrap items-center gap-5"
               >
-                <Link href="/catalog" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3.5 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 shadow-lg shadow-purple-900/30">
-                  Browse Cars <IconArrowRight size={20} />
+                <Link href="/catalog" className="bg-white text-[#05050A] hover:bg-slate-200 px-8 py-4 rounded-full font-bold tracking-wide transition-all duration-300 flex items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+                  Explore Inventory <IconArrowRight size={20} />
                 </Link>
-                <Link href="/sell-your-car" className="border border-white/30 text-white hover:bg-white/10 px-8 py-3.5 rounded-full font-medium transition-all duration-300">
+                <Link href="/sell-your-car" className="text-slate-300 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.03] px-8 py-4 rounded-full font-medium transition-all duration-300">
                   Sell Your Car
                 </Link>
               </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex flex-wrap gap-x-6 gap-y-3 mt-10 text-sm text-gray-400 font-medium"
-              >
-                <span className="flex items-center gap-2"><IconCheck size={18} className="text-purple-500" /> 150+ Cars</span>
-                <span className="flex items-center gap-2"><IconCheck size={18} className="text-purple-500" /> Transparent Pricing</span>
-                <span className="flex items-center gap-2"><IconCheck size={18} className="text-purple-500" /> 500+ Happy Customers</span>
-              </motion.div>
             </div>
 
-            {/* Right Col (Floating Card) */}
+            {/* Right Col (Premium Floating Card) */}
             <div className="lg:col-span-5 hidden lg:flex justify-center lg:justify-end">
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.4 }}
-                className="animate-float"
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="animate-float w-[340px]"
               >
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] w-[320px]">
-                  <div className="flex justify-between items-center mb-3 px-1">
-                    <span className="text-xs text-purple-400 font-bold uppercase tracking-widest">Featured of the Week</span>
+                <div className="glass-premium p-4 flex flex-col">
+                  <div className="flex justify-between items-center mb-4 px-2 pt-1">
+                    <span className="text-[10px] text-purple-400 font-bold uppercase tracking-[0.15em] flex items-center gap-2">
+                      <IconStarFilled size={12} /> Featured Pick
+                    </span>
                   </div>
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4 border border-white/10">
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-5">
                     <Image src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?w=800&q=80" alt="Featured Car" fill className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   </div>
-                  <div className="px-1">
-                    <h4 className="text-white font-bold text-lg" style={{ fontFamily: 'var(--font-outfit)' }}>Mercedes-Benz C-Class</h4>
-                    <p className="text-purple-400 font-bold text-xl mt-1">₹45.50 Lakh</p>
-                    <Link href="/catalog" className="mt-4 w-full bg-white/10 hover:bg-purple-600 text-white text-sm py-2.5 rounded-xl font-semibold flex items-center justify-center transition-colors border border-white/10 hover:border-purple-500">
-                      View Details
-                    </Link>
+                  <div className="px-2 pb-2">
+                    <h4 className="text-white font-bold text-xl tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Mercedes-Benz C-Class</h4>
+                    <div className="flex justify-between items-end mt-2">
+                      <p className="text-slate-300 font-light">2021 • Automatic</p>
+                      <p className="text-white font-bold text-lg">₹45.50 L</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -221,102 +216,107 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 animate-bounce hidden md:block opacity-70">
-          <IconChevronDown size={32} className="text-purple-400" />
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 hidden md:block opacity-40 hover:opacity-100 transition-opacity animate-bounce">
+          <IconChevronDown size={32} className="text-white font-light" stroke={1} />
         </div>
       </section>
 
-      {/* ════ SECTION 2: QUICK SEARCH BAR ════ */}
-      <div className="relative z-30 container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 mb-12">
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 sm:p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5),0_16px_32px_-8px_rgba(147,51,234,0.15)]">
+      {/* ════ SECTION 2: SLEEK DASHBOARD SEARCH ════ */}
+      <div className="relative z-30 container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 sm:-mt-16 mb-16">
+        <div className="glass-premium p-6 sm:p-8">
           {/* Tabs */}
-          <div className="flex gap-8 border-b border-white/10 mb-6 px-2">
+          <div className="flex gap-8 mb-6 px-2">
             {['buy', 'new', 'sell'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => tab === 'sell' ? router.push('/sell-your-car') : setSearchTab(tab)}
-                className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors relative ${searchTab === tab ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                className={`pb-3 text-xs font-bold uppercase tracking-[0.15em] transition-all relative ${searchTab === tab ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 {tab === 'buy' ? 'Buy a Car' : tab === 'new' ? 'New Cars' : 'Sell Your Car'}
                 {searchTab === tab && (
-                  <span className="absolute bottom-0 left-0 w-full h-1 bg-purple-500 rounded-t-full shadow-[0_0_10px_rgba(147,51,234,0.5)]" />
+                  <motion.div layoutId="searchTabIndicator" className="absolute bottom-0 left-0 w-full h-[2px] bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.8)]" />
                 )}
               </button>
             ))}
           </div>
 
-          {/* 4 Dropdowns Row */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <select 
-              value={searchParams.brand} onChange={handleBrandChange}
-              className="md:col-span-1 appearance-none w-full bg-[#12121f]/80 border-2 border-white/5 text-white font-semibold rounded-2xl px-5 py-4 outline-none focus:border-purple-500 focus:bg-[#12121f] transition-all cursor-pointer"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-            >
-              <option value="">Any Brand</option>
-              {availableBrands.map(b => <option key={b} value={b}>{b}</option>)}
-            </select>
+          {/* Unified Form Area */}
+          <div className="bg-[#0A0A12] border border-white/[0.04] rounded-2xl flex flex-col md:flex-row shadow-inner">
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
+              <select 
+                value={searchParams.brand} onChange={handleBrandChange}
+                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
+              >
+                <option value="">Any Brand</option>
+                {availableBrands.map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </div>
 
-            <select 
-              value={searchParams.model} onChange={(e) => setSearchParams({...searchParams, model: e.target.value})}
-              disabled={availableModels.length === 0}
-              className="md:col-span-1 appearance-none w-full bg-[#12121f]/80 border-2 border-white/5 text-white font-semibold rounded-2xl px-5 py-4 outline-none focus:border-purple-500 focus:bg-[#12121f] transition-all cursor-pointer disabled:opacity-50"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-            >
-              <option value="">Any Model</option>
-              {availableModels.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
+              <select 
+                value={searchParams.model} onChange={(e) => setSearchParams({...searchParams, model: e.target.value})}
+                disabled={availableModels.length === 0}
+                className="select-premium w-full h-[60px] px-6 text-sm font-medium disabled:opacity-40"
+              >
+                <option value="">Any Model</option>
+                {availableModels.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
 
-            <select 
-              value={searchParams.budget} onChange={(e) => setSearchParams({...searchParams, budget: e.target.value})}
-              className="md:col-span-1 appearance-none w-full bg-[#12121f]/80 border-2 border-white/5 text-white font-semibold rounded-2xl px-5 py-4 outline-none focus:border-purple-500 focus:bg-[#12121f] transition-all cursor-pointer"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-            >
-              <option value="">Any Budget</option>
-              <option value="0-500000">Under ₹5 Lakh</option>
-              <option value="500000-1000000">₹5 Lakh - ₹10 Lakh</option>
-              <option value="1000000-2000000">₹10 Lakh - ₹20 Lakh</option>
-              <option value="2000000-99999999">Above ₹20 Lakh</option>
-            </select>
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
+              <select 
+                value={searchParams.budget} onChange={(e) => setSearchParams({...searchParams, budget: e.target.value})}
+                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
+              >
+                <option value="">Any Budget</option>
+                <option value="0-500000">Under ₹5 Lakh</option>
+                <option value="500000-1000000">₹5 Lakh - ₹10 Lakh</option>
+                <option value="1000000-2000000">₹10 Lakh - ₹20 Lakh</option>
+                <option value="2000000-99999999">Above ₹20 Lakh</option>
+              </select>
+            </div>
 
-            <select 
-              value={searchParams.fuel} onChange={(e) => setSearchParams({...searchParams, fuel: e.target.value})}
-              className="md:col-span-1 appearance-none w-full bg-[#12121f]/80 border-2 border-white/5 text-white font-semibold rounded-2xl px-5 py-4 outline-none focus:border-purple-500 focus:bg-[#12121f] transition-all cursor-pointer"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}
-            >
-              <option value="">Any Fuel</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="CNG">CNG</option>
-              <option value="Electric">Electric</option>
-            </select>
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04] hidden lg:block">
+              <select 
+                value={searchParams.fuel} onChange={(e) => setSearchParams({...searchParams, fuel: e.target.value})}
+                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
+              >
+                <option value="">Any Fuel</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="CNG">CNG</option>
+                <option value="Electric">Electric</option>
+              </select>
+            </div>
 
             <button 
               onClick={handleSearch}
-              className="md:col-span-1 w-full bg-gradient-to-br from-purple-600 to-[#7e22ce] hover:from-[#7e22ce] hover:to-purple-600 text-white rounded-2xl px-6 py-4 font-bold tracking-wide uppercase transition-all flex items-center justify-center gap-2 shadow-[0_12px_24px_-8px_rgba(147,51,234,0.4)] hover:shadow-[0_20px_40px_-12px_rgba(147,51,234,0.5)] active:scale-95"
+              className="md:w-auto px-10 h-[60px] bg-purple-600 hover:bg-purple-500 text-white font-bold tracking-widest uppercase text-xs transition-colors flex items-center justify-center gap-2 rounded-b-2xl md:rounded-none md:rounded-r-2xl"
             >
-              <IconSearch size={20} /> Search
+              <IconSearch size={18} stroke={2} /> Search
             </button>
           </div>
         </div>
       </div>
 
-      {/* ════ SECTION 3: STATS STRIP ════ */}
-      <section className="bg-purple-900/40 border-y border-purple-500/10 py-12 relative z-20">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10">
+      {/* ════ SECTION 3: REFINED STATS ════ */}
+      <section className="py-16 relative z-20 overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-radial-gradient opacity-50" />
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12">
             {[
               { icon: IconUsers, count: 500, suffix: '+', label: 'Happy Customers' },
               { icon: IconCar, count: 150, suffix: '+', label: 'Cars in Stock' },
               { icon: IconCalendarEvent, count: 10, suffix: '+', label: 'Years of Trust' },
-              { icon: IconShieldCheck, count: 100, suffix: '%', label: 'Transparent Pricing' },
+              { icon: IconShieldCheck, count: 100, suffix: '%', label: 'Transparency' },
             ].map((stat, i) => (
-              <div key={i} className={`text-center ${i !== 3 && i !== 1 ? 'border-r border-white/10' : ''} md:border-r ${i === 3 ? 'md:border-none' : ''}`}>
-                <stat.icon size={28} className="text-purple-400 mx-auto mb-3" />
-                <h3 className="text-4xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit)' }}>
+              <div key={i} className={`text-center ${i !== 3 && i !== 1 ? 'border-r border-white/[0.03]' : ''} md:border-r md:last:border-none`}>
+                <stat.icon size={32} stroke={1.5} className="text-slate-500 mx-auto mb-4" />
+                <h3 className="text-[40px] font-bold text-white mb-1 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
                   <AnimatedCounter end={stat.count} />{stat.suffix}
                 </h3>
-                <p className="text-sm text-gray-400 font-medium">{stat.label}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -324,42 +324,42 @@ export default function HomePage() {
       </section>
 
       {/* ════ SECTION 4: FEATURED CARS ════ */}
-      <section className="py-14 md:py-20">
+      <section className="py-20 md:py-32 relative">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-end mb-12 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-end mb-16 gap-6">
             <div>
-              <p className="text-purple-400 text-xs font-bold tracking-widest uppercase mb-3">OUR INVENTORY</p>
-              <h2 className="text-[32px] md:text-[40px] text-white font-bold leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Featured Cars
+              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">OUR INVENTORY</p>
+              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
+                Featured Models
               </h2>
             </div>
-            <Link href="/catalog" className="text-purple-400 hover:text-purple-300 text-sm font-bold flex items-center gap-1 group transition-colors uppercase tracking-wide">
-              View All Cars <IconArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Link href="/catalog" className="text-slate-300 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 group transition-colors pb-2 border-b border-transparent hover:border-white/30">
+              View All Cars <IconArrowRight size={16} stroke={2} className="group-hover:translate-x-2 transition-transform duration-300" />
             </Link>
           </div>
 
           {loadingCars ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-[#12121f] border border-white/10 rounded-2xl overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-white/5" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-6 bg-white/5 rounded w-3/4" />
-                    <div className="h-4 bg-white/5 rounded w-full" />
-                    <div className="h-10 bg-white/5 rounded w-full mt-4" />
+                <div key={i} className="glass-premium overflow-hidden animate-pulse">
+                  <div className="aspect-[4/3] bg-white/[0.02]" />
+                  <div className="p-6 space-y-4">
+                    <div className="h-6 bg-white/[0.03] rounded-md w-3/4" />
+                    <div className="h-4 bg-white/[0.03] rounded-md w-full" />
+                    <div className="h-10 bg-white/[0.03] rounded-md w-full mt-6" />
                   </div>
                 </div>
               ))}
             </div>
           ) : cars.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {cars.map((car, i) => (
                 <CarCard key={car._id} car={car} index={i} />
               ))}
             </div>
           ) : (
-             <div className="text-center py-12 text-red-400 bg-red-900/10 rounded-2xl border border-red-500/20 font-medium">
-               Failed to load cars or inventory is empty.
+             <div className="text-center py-20 text-slate-400 glass-premium font-light">
+               No cars currently featured. Browse our catalog for more.
              </div>
           )}
         </div>
@@ -367,19 +367,20 @@ export default function HomePage() {
 
       {/* ════ SECTION 5: AD BANNERS ════ */}
       {banners.length > 0 && (
-        <section className="py-14 md:py-20 bg-[#0f0f1e]">
+        <section className="py-20 md:py-32 bg-[#0A0A12] border-y border-white/[0.02]">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-purple-400 text-xs font-bold tracking-widest uppercase mb-3 text-center">OFFERS & PROMOTIONS</p>
-            <h2 className="text-[32px] md:text-[40px] text-white font-bold leading-tight mb-10 text-center" style={{ fontFamily: 'var(--font-outfit)' }}>
-              Latest Deals
+            <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-center">OFFERS & PROMOTIONS</p>
+            <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight mb-16 text-center tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
+              Exclusive Deals
             </h2>
 
-            <div className="overflow-hidden rounded-2xl" ref={bannerRef}>
+            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/[0.05]" ref={bannerRef}>
               <div className="flex">
                 {banners.map((b) => (
-                  <div key={b._id} className="flex-[0_0_100%] min-w-0 relative h-[320px] sm:h-[400px]">
+                  <div key={b._id} className="flex-[0_0_100%] min-w-0 relative h-[320px] sm:h-[450px]">
                     <Image src={b.desktopImageUrl} alt="Promo" fill className="object-cover hidden sm:block" />
                     <Image src={b.mobileImageUrl} alt="Promo" fill className="object-cover sm:hidden" />
+                    <div className="absolute inset-0 bg-black/10 pointer-events-none" />
                   </div>
                 ))}
               </div>
@@ -388,37 +389,38 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ════ SECTION 6: WHY CHOOSE US (40/60 split) ════ */}
-      <section className="py-14 md:py-20 bg-[#0a0a12]">
+      {/* ════ SECTION 6: WHY CHOOSE US ════ */}
+      <section className="py-20 md:py-32">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
             <div className="lg:col-span-5">
-              <p className="text-purple-400 text-xs font-bold tracking-widest uppercase mb-3">WHY HARIRAM MOTORS</p>
-              <h2 className="text-[32px] md:text-[40px] text-white font-bold leading-tight mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Why Thousands <br /> Trust Us
+              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">THE HARIRAM DIFFERENCE</p>
+              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight mb-8 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
+                Excellence in <br /> Every Drive.
               </h2>
-              <p className="text-gray-400 mb-8 leading-relaxed font-medium">
-                We've been serving Surat for over 10 years with honest pricing, genuine cars, and a no-pressure buying experience. Our commitment is to quality and customer satisfaction.
+              <p className="text-slate-400 mb-10 leading-relaxed font-light text-lg">
+                For over a decade, we have redefined the pre-owned car buying experience in Surat. No pressure, absolute transparency, and meticulous curation.
               </p>
-              <Link href="/about" className="inline-flex items-center gap-2 border-2 border-purple-500 text-purple-400 hover:bg-purple-600 hover:text-white rounded-full px-8 py-3.5 transition-colors font-bold uppercase tracking-wide text-sm">
-                Meet Our Team <IconArrowRight size={18} />
+              <Link href="/about" className="inline-flex items-center gap-3 text-white font-bold uppercase tracking-widest text-xs transition-all group">
+                <span className="pb-1 border-b border-purple-500">Discover Our Story</span>
+                <IconArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
 
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
               {[
-                { icon: IconShieldCheck, title: 'Verified Cars', desc: 'Every car undergoes a 100-point inspection before listing.' },
-                { icon: IconCurrencyRupee, title: 'Transparent Pricing', desc: 'No hidden charges. Price you see is price you pay.' },
-                { icon: IconCertificate, title: 'Full Documentation', desc: 'RC transfer, insurance, NOC — we handle everything.' },
-                { icon: IconHeadset, title: 'After-Sale Support', desc: 'We\'re here even after the deal is done. 3 months support.' },
+                { icon: IconShieldCheck, title: 'Verified Quality', desc: '100-point rigorous mechanical inspection.' },
+                { icon: IconCurrencyRupee, title: 'Transparent Value', desc: 'Zero hidden charges. Pure honesty.' },
+                { icon: IconCertificate, title: 'Seamless Paperwork', desc: 'RC, insurance, and NOC handled for you.' },
+                { icon: IconHeadset, title: 'Dedicated Support', desc: 'Post-purchase assistance you can rely on.' },
               ].map((feat, i) => (
-                <div key={i} className="bg-[#12121f] border border-white/5 rounded-2xl p-6 hover:border-purple-500/40 transition-colors shadow-lg">
-                  <div className="w-14 h-14 rounded-full bg-purple-600/20 flex items-center justify-center mb-5 text-purple-400">
-                    <feat.icon size={28} />
+                <div key={i} className="glass-premium p-8 group">
+                  <div className="mb-6 text-slate-500 group-hover:text-purple-400 transition-colors duration-500">
+                    <feat.icon size={36} stroke={1.5} />
                   </div>
-                  <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'var(--font-outfit)' }}>{feat.title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed font-medium">{feat.desc}</p>
+                  <h3 className="text-white font-bold text-xl mb-3 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{feat.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed font-light">{feat.desc}</p>
                 </div>
               ))}
             </div>
@@ -428,55 +430,55 @@ export default function HomePage() {
       </section>
 
       {/* ════ SECTION 7: TESTIMONIALS ════ */}
-      <section className="py-14 md:py-20 overflow-hidden bg-[#0f0f1e]">
+      <section className="py-20 md:py-32 overflow-hidden bg-[#0A0A12] border-t border-white/[0.02]">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-12">
+          <div className="flex justify-between items-end mb-16">
             <div>
-              <p className="text-purple-400 text-xs font-bold tracking-widest uppercase mb-3">TESTIMONIALS</p>
-              <h2 className="text-[32px] md:text-[40px] text-white font-bold leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
-                What Our Customers Say
+              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">CLIENT STORIES</p>
+              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
+                Driven by Trust
               </h2>
             </div>
-            <div className="hidden md:flex gap-3">
-              <button onClick={scrollPrev} className="w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center text-white hover:bg-purple-600 hover:border-purple-600 transition-colors">
-                <IconChevronLeft size={24} />
+            <div className="hidden md:flex gap-4">
+              <button onClick={scrollPrev} className="w-12 h-12 rounded-full glass-premium flex items-center justify-center text-slate-300 hover:text-white hover:border-purple-500/50 transition-all">
+                <IconChevronLeft size={24} stroke={1.5} />
               </button>
-              <button onClick={scrollNext} className="w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center text-white hover:bg-purple-600 hover:border-purple-600 transition-colors">
-                <IconChevronRight size={24} />
+              <button onClick={scrollNext} className="w-12 h-12 rounded-full glass-premium flex items-center justify-center text-slate-300 hover:text-white hover:border-purple-500/50 transition-all">
+                <IconChevronRight size={24} stroke={1.5} />
               </button>
             </div>
           </div>
 
           {loadingTestimonials ? (
-             <div className="flex gap-6">
+             <div className="flex gap-8">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex-1 bg-[#12121f] rounded-2xl h-64 animate-pulse" />
+                  <div key={i} className="flex-1 glass-premium h-72 animate-pulse" />
                 ))}
              </div>
           ) : testimonials.length > 0 ? (
             <div className="overflow-visible" ref={testiRef}>
-              <div className="flex gap-6 -ml-4 pl-4 pr-4 sm:pr-0">
+              <div className="flex gap-8 -ml-4 pl-4 pr-4 sm:pr-0">
                 {testimonials.map((t) => (
-                  <div key={t._id} className="flex-[0_0_90%] sm:flex-[0_0_45%] lg:flex-[0_0_31%] min-w-0 bg-[#12121f] border border-white/5 rounded-2xl p-8 flex flex-col justify-between shadow-xl">
+                  <div key={t._id} className="flex-[0_0_90%] sm:flex-[0_0_45%] lg:flex-[0_0_31%] min-w-0 glass-premium p-10 flex flex-col justify-between">
                     <div>
-                      <div className="flex gap-1 mb-5 text-yellow-400">
-                        {[...Array(t.rating || 5)].map((_, j) => <IconStarFilled key={j} size={18} />)}
+                      <div className="flex gap-1 mb-6 text-purple-400 opacity-80">
+                        {[...Array(t.rating || 5)].map((_, j) => <IconStarFilled key={j} size={14} />)}
                       </div>
-                      <p className="text-gray-300 text-base leading-relaxed mb-6 italic font-medium">
+                      <p className="text-slate-300 text-lg leading-relaxed mb-8 font-light italic">
                         "{t.review}"
                       </p>
                     </div>
-                    <div className="flex items-center gap-4 border-t border-white/5 pt-5">
+                    <div className="flex items-center gap-5">
                       {t.photo?.url ? (
-                        <Image src={t.photo.url} alt={t.customerName} width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
+                        <Image src={t.photo.url} alt={t.customerName} width={48} height={48} className="w-12 h-12 rounded-full object-cover grayscale opacity-80" />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 font-bold text-lg">
                           {t.customerName?.charAt(0) || 'U'}
                         </div>
                       )}
                       <div>
-                        <p className="text-white font-bold">{t.customerName}</p>
-                        <p className="text-purple-400 text-xs font-semibold uppercase tracking-wider mt-0.5">Bought: {t.carModel || 'Car'}</p>
+                        <p className="text-white font-bold tracking-tight">{t.customerName}</p>
+                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Bought {t.carModel || 'Car'}</p>
                       </div>
                     </div>
                   </div>
@@ -487,24 +489,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════ SECTION 8: SELL YOUR CAR CTA ════ */}
-      <section className="bg-gradient-to-r from-[#4c1d95] to-[#2e1065] py-16 md:py-20 relative overflow-hidden">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-            <div className="max-w-xl">
-              <h2 className="text-[32px] md:text-[44px] text-white font-bold mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Want to Sell Your Car?
-              </h2>
-              <p className="text-white/80 text-lg leading-relaxed font-medium">
-                Get the best price for your used car in Surat. Free inspection. Instant payment. Zero hassle.
-              </p>
-            </div>
-            <div className="flex flex-col items-center md:items-end gap-3 shrink-0">
-              <Link href="/sell-your-car" className="bg-white text-purple-900 font-bold px-10 py-4 rounded-full text-lg hover:scale-105 transition-transform shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] flex items-center gap-2">
-                Get Free Valuation <IconArrowRight size={20} />
-              </Link>
-              <p className="text-white/60 text-sm font-medium">or call us at +91 93734 82016</p>
-            </div>
+      {/* ════ SECTION 8: CTA ════ */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/40 to-blue-900/20" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000')] bg-cover bg-center opacity-10 mix-blend-overlay" />
+        
+        <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-5xl md:text-7xl text-white font-bold mb-6 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
+            Ready for an Upgrade?
+          </h2>
+          <p className="text-slate-300 text-xl leading-relaxed font-light mb-12 max-w-2xl mx-auto">
+            Get the best market valuation for your used car in Surat. Transparent inspection, instant payment, zero hassle.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Link href="/sell-your-car" className="bg-white text-[#05050A] font-bold px-10 py-5 rounded-full text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] flex items-center gap-3">
+              Get Free Valuation <IconArrowRight size={18} stroke={2} />
+            </Link>
+            <p className="text-slate-400 text-sm font-medium">Or speak to an expert at <br className="sm:hidden" /><span className="text-white">93734 82016</span></p>
           </div>
         </div>
       </section>

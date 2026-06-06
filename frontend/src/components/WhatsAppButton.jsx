@@ -31,30 +31,32 @@ export default function FloatingUtilities() {
   if (pathname?.startsWith('/admin')) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
+    <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-5">
       
-      {/* Scroll to top button */}
+      {/* Premium Scroll to top button */}
       <button
         onClick={scrollToTop}
-        className={`w-12 h-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(147,51,234,0.39)] transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        className={`w-12 h-12 bg-white/[0.03] backdrop-blur-xl border border-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-500 ease-[0.16,1,0.3,1] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
         aria-label="Scroll to top"
       >
-        <IconChevronUp size={24} />
+        <IconChevronUp size={20} stroke={1.5} />
       </button>
 
-      {/* WhatsApp Button */}
+      {/* Elegant WhatsApp Button */}
       <a
         href="https://wa.me/919373482016"
         target="_blank"
         rel="noopener noreferrer"
-        className="relative flex items-center justify-center w-14 h-14 bg-[#25d366] text-white rounded-full hover:scale-110 transition-transform duration-300 z-50 group"
-        style={{ animation: 'pulse-ring 2s infinite' }}
+        className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-[#1B9C4A] to-[#25D366] text-white rounded-full transition-transform duration-500 hover:scale-105 z-50 group shadow-[0_8px_32px_rgba(37,211,102,0.3)]"
+        style={{ animation: 'pulse-ring 3s cubic-bezier(0.16, 1, 0.3, 1) infinite' }}
         aria-label="Chat on WhatsApp"
       >
-        <IconBrandWhatsapp size={32} />
-        <span className="absolute right-full mr-4 px-3 py-1.5 bg-[#25d366] text-white text-xs font-semibold rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Need help? Chat with us!
-          <span className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-[#25d366]" />
+        <IconBrandWhatsapp size={28} stroke={1.5} />
+        
+        {/* Sleek Tooltip */}
+        <span className="absolute right-full mr-5 px-4 py-2 bg-[#0A0A12] border border-white/[0.05] backdrop-blur-xl text-slate-300 text-[11px] font-bold uppercase tracking-widest rounded shadow-[0_8px_32px_rgba(0,0,0,0.4)] opacity-0 group-hover:opacity-100 transition-all duration-500 whitespace-nowrap pointer-events-none translate-x-2 group-hover:translate-x-0">
+          Chat with an Expert
+          <span className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-[#0A0A12] border-t border-r border-white/[0.05] rotate-45" />
         </span>
       </a>
       
