@@ -1,514 +1,325 @@
-'use client';
-
-import { useEffect, useState, useCallback } from 'react';
+"use client";
 import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import { 
-  IconCar, IconUsers, IconCalendarEvent, IconShieldCheck, IconArrowRight, 
-  IconCurrencyRupee, IconCertificate, IconHeadset, IconStarFilled, IconChevronLeft, IconChevronRight,
-  IconChevronDown, IconCheck, IconSearch
-} from '@tabler/icons-react';
-
-import CarCard from '@/components/CarCard';
-import api from '@/lib/api';
-
-// --- Helper Components --- //
-
-function AnimatedCounter({ end, duration = 2000 }) {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }, [end, duration]);
-  
-  return <>{count}</>;
-}
-
-// --- Main Page Component --- //
 
 export default function HomePage() {
-  const router = useRouter();
-
-  // State
-  const [cars, setCars] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [banners, setBanners] = useState([]);
-  const [loadingCars, setLoadingCars] = useState(true);
-  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
-
-  // Search Bar State
-  const [searchTab, setSearchTab] = useState('buy'); // buy, sell, new
-  const [searchParams, setSearchParams] = useState({ brand: '', model: '', budget: '', fuel: '' });
-  
-  // API Filter Data
-  const [availableBrands, setAvailableBrands] = useState([]);
-  const [brandModelMap, setBrandModelMap] = useState([]);
-  const [availableModels, setAvailableModels] = useState([]);
-
-  // Embla Carousels
-  const [bannerRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
-  const [testiRef, testiApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' });
-
-  const scrollPrev = useCallback(() => testiApi && testiApi.scrollPrev(), [testiApi]);
-  const scrollNext = useCallback(() => testiApi && testiApi.scrollNext(), [testiApi]);
-
-  useEffect(() => {
-    const fetchHomeData = async () => {
-      try {
-        const [carsRes, testRes, bannerRes, filtersRes] = await Promise.allSettled([
-          api.get('/cars?limit=8&status=available'),
-          api.get('/happy-customers?limit=6'),
-          api.get('/promo-banners?active=true'),
-          api.get('/cars/filters')
-        ]);
-        
-        if (carsRes.status === 'fulfilled') setCars(carsRes.value.data.cars || []);
-        if (testRes.status === 'fulfilled') setTestimonials(testRes.value.data || []);
-        if (bannerRes.status === 'fulfilled') setBanners(bannerRes.value.data || []);
-        
-        if (filtersRes.status === 'fulfilled' && filtersRes.value.data?.data) {
-          const makes = filtersRes.value.data.data.makes || [];
-          const map = filtersRes.value.data.data.brandModelMap || [];
-          setAvailableBrands(makes);
-          setBrandModelMap(map);
-          setAvailableModels([...new Set(map.flatMap(m => m.models))].filter(Boolean).sort());
-        }
-      } catch (error) {
-        console.error('Error fetching home data');
-      } finally {
-        setLoadingCars(false);
-        setLoadingTestimonials(false);
-      }
-    };
-    fetchHomeData();
-  }, []);
-
-  const handleBrandChange = (e) => {
-    const newBrand = e.target.value;
-    setSearchParams(prev => ({ ...prev, brand: newBrand, model: '' }));
-
-    if (newBrand) {
-      const match = brandModelMap.find(m => m._id === newBrand);
-      setAvailableModels(match && match.models ? match.models.filter(Boolean).sort() : []);
-    } else {
-      const allModels = [...new Set(brandModelMap.flatMap(item => item.models))].filter(Boolean).sort();
-      setAvailableModels(allModels);
-    }
-  };
-
-  const handleSearch = () => {
-    const query = new URLSearchParams();
-    if (searchParams.brand) query.append('make', searchParams.brand);
-    if (searchParams.model) query.append('model', searchParams.model);
-    if (searchParams.fuel) query.append('fuelType', searchParams.fuel);
-    if (searchTab === 'new') query.append('condition', 'new');
-    
-    if (searchParams.budget) {
-      const [minPrice, maxPrice] = searchParams.budget.split('-');
-      if (minPrice) query.append('minPrice', minPrice);
-      if (maxPrice && maxPrice !== '99999999') query.append('maxPrice', maxPrice);
-    }
-    
-    router.push(`/catalog?${query.toString()}`);
-  };
-
   return (
     <>
-      {/* ════ SECTION 1: HERO (Premium 2-col layout) ════ */}
-      <section className="relative min-h-[100vh] flex items-center pt-24 overflow-hidden">
-        {/* Background & Overlays */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop"
-            alt="Luxury Showroom"
-            fill
-            priority={true}
-            className="object-cover scale-105 transform origin-center animate-[subtle-zoom_20s_ease-out_forwards]"
-            quality={100}
-          />
-          {/* Deep cinematic gradient fade */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#05050A] via-[#05050A]/95 to-[#05050A]/40" />
-          {/* Ambient Glow */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
-        </div>
+      
 
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Col (Typography) */}
-            <div className="lg:col-span-7 pb-20 lg:pb-0">
-              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-white/[0.05] backdrop-blur-xl rounded-full text-slate-300 text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
-                  <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" /> Premium Car Dealership
-                </div>
-              </motion.div>
 
-              <motion.h1 
-                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-6xl md:text-[84px] text-white font-bold leading-[1.05] tracking-tighter mb-8"
-                style={{ fontFamily: 'var(--font-outfit)' }}
-              >
-                Find Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-300 to-purple-500">Perfect Car</span> <br />
-                In Surat
-              </motion.h1>
 
-              <motion.p 
-                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="text-lg md:text-xl text-slate-400 max-w-lg mb-10 leading-relaxed font-light"
-              >
-                Experience Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
-              </motion.p>
+<header className="relative w-full h-[819px] min-h-[600px] flex items-center justify-center overflow-hidden bg-primary-container">
 
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="flex flex-wrap items-center gap-5"
-              >
-                <Link href="/catalog" className="bg-white text-[#05050A] hover:bg-slate-200 px-8 py-4 rounded-full font-bold tracking-wide transition-all duration-300 flex items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                  Explore Inventory <IconArrowRight size={20} />
-                </Link>
-                <Link href="/sell-your-car" className="text-slate-300 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/[0.03] px-8 py-4 rounded-full font-medium transition-all duration-300">
-                  Sell Your Car
-                </Link>
-              </motion.div>
-            </div>
+<div className="absolute inset-0 z-0">
+<img alt="Hero background" className="w-full h-full object-cover opacity-40 mix-blend-luminosity" data-alt="A cinematic, high-contrast shot of a sleek, premium dark grey sedan parked in a modern, well-lit showroom. The lighting highlights the car's sharp engineering lines and metallic finish. The overall aesthetic is corporate, modern, and authoritative, aligning with a high-end pre-owned dealership in Surat. The color palette leans heavily on deep navy and steel grey, conveying reliability and trustworthiness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRjBZZW9ORMXQ0Quhiybv67VoT-6ZaoC7g5MH74Sn-rdf5J1GGfxptMiBvqm727FWnGc5g0s-P828Z3HTlTLPSGM48P4b-wo20_ZziKyzfJCMaFpXL7fa5Y3CkX7q4NLoDYXgp-G0sNItkAfYUm10UNi-UpLY_KLofrXHRJrClKFkme4uppOZkMlpXO_GDeslzRWw3AIR3uvA0FJsKYP-Z_R7JvUivuNSQD9WnyLFHs-LuaZNQy_hHh5kEGB9VOedtzf2M1x5uO3M"/>
+<div className="absolute inset-0 bg-gradient-to-b from-primary-container/80 via-primary-container/60 to-background z-10"></div>
+</div>
 
-            {/* Right Col (Premium Floating Card) */}
-            <div className="lg:col-span-5 hidden lg:flex justify-center lg:justify-end">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="animate-float w-[340px]"
-              >
-                <div className="glass-premium p-4 flex flex-col">
-                  <div className="flex justify-between items-center mb-4 px-2 pt-1">
-                    <span className="text-[10px] text-purple-400 font-bold uppercase tracking-[0.15em] flex items-center gap-2">
-                      <IconStarFilled size={12} /> Featured Pick
+<div className="relative z-20 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center text-on-primary">
+<span className="inline-block px-4 py-1.5 mb-6 rounded-full bg-surface/10 border border-surface/20 backdrop-blur-sm font-label-sm text-label-sm text-secondary-fixed tracking-wider uppercase">
+                Premium Dealership • Surat
+            </span>
+<h1 className="font-display-lg text-[40px] md:text-display-lg font-extrabold mb-6 max-w-4xl mx-auto leading-tight text-white drop-shadow-lg">
+                Surat&apos;s Trusted Choice for <br/><span className="text-secondary-fixed">Premium Pre-Owned Cars</span>
+</h1>
+<p className="font-body-lg text-body-lg text-secondary-fixed-dim mb-10 max-w-2xl mx-auto">
+                Experience a frictionless journey to your next high-quality vehicle. Expertly inspected, competitively priced, and backed by our local commitment to excellence.
+            </p>
+<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+<a className="w-full sm:w-auto px-8 py-4 bg-[#FF5A00] text-white rounded-lg font-body-md text-body-md font-semibold hover:bg-[#e04f00] transition-all duration-300 shadow-[0_4px_20px_rgba(255,90,0,0.3)] hover:shadow-[0_6px_25px_rgba(255,90,0,0.4)] flex items-center justify-center gap-2" href="#">
+                    Browse Cars
+                    <span className="material-symbols-outlined">arrow_forward</span>
+</a>
+<a className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-outline text-white rounded-lg font-body-md text-body-md font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2" href="#">
+                    Sell Your Car
+                    <span className="material-symbols-outlined">directions_car</span>
+</a>
+</div>
+</div>
+</header>
+
+<section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop -mt-12 relative z-30">
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface rounded-xl shadow-[0_4px_20px_rgba(15,23,42,0.08)] p-6 border border-outline-variant">
+<div className="text-center p-4 border-r border-outline-variant border-opacity-50">
+<div className="font-headline-lg text-headline-lg font-bold text-primary mb-1">500+</div>
+<div className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Cars Sold</div>
+</div>
+<div className="text-center p-4 md:border-r border-outline-variant border-opacity-50">
+<div className="font-headline-lg text-headline-lg font-bold text-primary mb-1">150+</div>
+<div className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">In Stock</div>
+</div>
+<div className="text-center p-4 border-r border-outline-variant border-opacity-50">
+<div className="font-headline-lg text-headline-lg font-bold text-primary mb-1">15 Yrs</div>
+<div className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Experience</div>
+</div>
+<div className="text-center p-4">
+<div className="font-headline-lg text-headline-lg font-bold text-primary mb-1">4.9/5</div>
+<div className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Rating</div>
+</div>
+</div>
+</section>
+
+<section className="py-24 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div className="flex justify-between items-end mb-10">
+<div>
+<h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary font-bold mb-2">Featured Inventory</h2>
+<p className="font-body-md text-body-md text-secondary">Discover our hand-picked selection of premium vehicles.</p>
+</div>
+<a className="hidden md:flex items-center gap-2 font-body-md text-body-md font-medium text-primary hover:text-on-tertiary-container transition-colors group" href="#">
+                View All Inventory
+                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+
+<div className="bg-surface rounded-xl overflow-hidden border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_30px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
+<div className="relative h-48 w-full bg-surface-container overflow-hidden">
+<span className="absolute top-3 left-3 z-10 bg-on-tertiary-container text-white px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold shadow-sm">
+                        New Arrival
                     </span>
-                  </div>
-                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-5">
-                    <Image src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?w=800&q=80" alt="Featured Car" fill className="object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  </div>
-                  <div className="px-2 pb-2">
-                    <h4 className="text-white font-bold text-xl tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Mercedes-Benz C-Class</h4>
-                    <div className="flex justify-between items-end mt-2">
-                      <p className="text-slate-300 font-light">2021 • Automatic</p>
-                      <p className="text-white font-bold text-lg">₹45.50 L</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
+<img alt="Toyota Fortuner" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A pristine white Toyota Fortuner SUV parked outdoors on a sleek concrete surface. The image is brightly lit, showcasing the vehicle's robust and imposing design. The style is crisp, modern, and highly detailed, emphasizing the premium quality of the pre-owned inventory. Background is slightly blurred to keep focus on the vehicle's sharp lines and glossy finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdo_0qs3Lzg6FpcqDPeEeHyw4YUfC5mZvIsM344lgUT524pOizUZaBo0MynBswMBJ408UDmtn0mahGiyWrOMLmMjKWz6XINLzVhRWa8zCZKebPmuzZ3AQMBL8qfbNGH3VPx1IOQP7nfZ2ZK_vVLQecfOvKJPXr2ToQw2e5rK7NgEIcAt6zl-1yFL5UjsS_6u4ozZmdiUaWFmHQE47UmMmRYQB_SxZDpwU0S-sENxkqoQcHuIVa2marYJeMe3C4lqk7zSNmJdOQooE"/>
+</div>
+<div className="p-5 flex flex-col flex-grow">
+<div className="flex items-center gap-3 mb-3 border-b border-outline-variant pb-3">
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">2021</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Diesel</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Auto</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-1">Toyota Fortuner</h3>
+<p className="font-body-md text-body-md text-secondary mb-4 text-sm">Legender 2.8 4x4 AT</p>
+<div className="mt-auto">
+<div className="font-headline-md text-headline-md font-bold text-primary mb-4">₹42.50 Lakh</div>
+<button className="w-full py-2.5 border-2 border-primary text-primary rounded-lg font-body-md text-body-md font-semibold hover:bg-primary hover:text-white transition-colors duration-300">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
 
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 hidden md:block opacity-40 hover:opacity-100 transition-opacity animate-bounce">
-          <IconChevronDown size={32} className="text-white font-light" stroke={1} />
-        </div>
-      </section>
+<div className="bg-surface rounded-xl overflow-hidden border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_30px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
+<div className="relative h-48 w-full bg-surface-container overflow-hidden">
+<img alt="Hyundai Creta" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sleek, modern dark blue Hyundai Creta compact SUV angled slightly towards the camera in a sophisticated showroom setting. The lighting reflects off the polished metallic surface, emphasizing its corporate, modern aesthetic. The environment is clean with a cool steel grey undertone, projecting an image of reliability and high-end automotive care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApzsF1g4z_xLJ_XItl44uSQ_zMlprH7JmkOdrFJxCha-sjHAaJCuMNOUitNakeg3nbhAPzoPxCheKYUcRg7gUaKLihIfBxIRuteiNqj65byr_or13VbcgeqfnfvhXvLlsGeCLvwtvdK3s2I4ubx2_5vN1YIv7mitc6Cyst4izX-C8R5o5NtrbYGZZCSy3iLxqVQ911392p49-2fl62cIRUq8zSEC_6NnVJkkhlz9AFct4EYl6yLMmnc1NF5RjeZIf2--ZPE2k3nDk"/>
+</div>
+<div className="p-5 flex flex-col flex-grow">
+<div className="flex items-center gap-3 mb-3 border-b border-outline-variant pb-3">
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">2022</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Petrol</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Manual</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-1">Hyundai Creta</h3>
+<p className="font-body-md text-body-md text-secondary mb-4 text-sm">SX (O) 1.5 Petrol</p>
+<div className="mt-auto">
+<div className="font-headline-md text-headline-md font-bold text-primary mb-4">₹15.20 Lakh</div>
+<button className="w-full py-2.5 border-2 border-primary text-primary rounded-lg font-body-md text-body-md font-semibold hover:bg-primary hover:text-white transition-colors duration-300">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
 
-      {/* ════ SECTION 2: SLEEK DASHBOARD SEARCH ════ */}
-      <div className="relative z-30 container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 sm:-mt-16 mb-16">
-        <div className="glass-premium p-6 sm:p-8">
-          {/* Tabs */}
-          <div className="flex gap-8 mb-6 px-2">
-            {['buy', 'new', 'sell'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => tab === 'sell' ? router.push('/sell-your-car') : setSearchTab(tab)}
-                className={`pb-3 text-xs font-bold uppercase tracking-[0.15em] transition-all relative ${searchTab === tab ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
-              >
-                {tab === 'buy' ? 'Buy a Car' : tab === 'new' ? 'New Cars' : 'Sell Your Car'}
-                {searchTab === tab && (
-                  <motion.div layoutId="searchTabIndicator" className="absolute bottom-0 left-0 w-full h-[2px] bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.8)]" />
-                )}
-              </button>
-            ))}
-          </div>
+<div className="bg-surface rounded-xl overflow-hidden border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_30px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
+<div className="relative h-48 w-full bg-surface-container overflow-hidden">
+<span className="absolute top-3 left-3 z-10 bg-on-tertiary-container text-white px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold shadow-sm">
+                        New Arrival
+                    </span>
+<img alt="Maruti Suzuki Swift" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant red Maruti Suzuki Swift hatchback parked on a paved driveway with soft, natural daylight. The car is spotlessly clean, highlighting its sporty curves. The visual style is crisp and approachable, yet maintains the structured, high-quality feel of the dealership's modern aesthetic. Deep shadows anchor the car, giving it physical depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOaadp750Lm21w0uONUTcIGnNP_zEUqelk0sUJTLbdkAyhYm5wEUIG9EGIfftbgUficFn8xhfQ-jCPUfxerAHrEUhjVr2s_rfiZnHURHT_VUn7sftQn8EKsLIeYUbZB1LZlDNs9eBFZlSMqs5KngvStbMzVC9Cf55kl5-n58O6VQjlq8CvU0r_ld_X0CLy9S1hKpMviuV5hca-bad-G-h7RNpSVttvhd-o6UEE0bPFYHdqUpKYnMbewvknJoO1yHhYA0U9_ox-1ao"/>
+</div>
+<div className="p-5 flex flex-col flex-grow">
+<div className="flex items-center gap-3 mb-3 border-b border-outline-variant pb-3">
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">2020</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Petrol</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Auto</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-1">Maruti Suzuki Swift</h3>
+<p className="font-body-md text-body-md text-secondary mb-4 text-sm">ZXI Plus AMT</p>
+<div className="mt-auto">
+<div className="font-headline-md text-headline-md font-bold text-primary mb-4">₹7.15 Lakh</div>
+<button className="w-full py-2.5 border-2 border-primary text-primary rounded-lg font-body-md text-body-md font-semibold hover:bg-primary hover:text-white transition-colors duration-300">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
 
-          {/* Unified Form Area */}
-          <div className="bg-[#0A0A12] border border-white/[0.04] rounded-2xl flex flex-col md:flex-row shadow-inner">
-            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
-              <select 
-                value={searchParams.brand} onChange={handleBrandChange}
-                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
-              >
-                <option value="">Any Brand</option>
-                {availableBrands.map(b => <option key={b} value={b}>{b}</option>)}
-              </select>
-            </div>
+<div className="bg-surface rounded-xl overflow-hidden border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_30px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
+<div className="relative h-48 w-full bg-surface-container overflow-hidden">
+<img alt="Honda City" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated silver Honda City sedan captured in a studio-like environment with dramatic, high-contrast lighting. The lighting accentuates the sharp character lines running along the side profile. The overall tone is premium, professional, and structured, reflecting the dealership's authority and focus on high-quality engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI182kJ8uwZBdCd3cHpXZqQk1Ob-YQ6NMLiR3hlA6NUB0NCNvdTT37uy6bio1p2jc_5mpNnrBE3bS150ZpyVdVhkimH2fhYYOH7QY5a4TX3rz4DzvigVjOXssrjFYXot5oHgJ20fBgYFTwQnPTpcbmAnEfTuTayzKD5OxwXmZhM0u_5pGh8fn-AoJxRFSXBRG5HvFjnRX5TzfiS2HgZvJP9Sm1uTjvaSPrRK30M6GQRr8Rmoeky8PZYMUbimH16ZNhMMsB--ZO154"/>
+</div>
+<div className="p-5 flex flex-col flex-grow">
+<div className="flex items-center gap-3 mb-3 border-b border-outline-variant pb-3">
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">2019</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Petrol</span>
+<span className="font-label-sm text-label-sm text-secondary bg-surface-container px-2 py-1 rounded">Manual</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-1">Honda City</h3>
+<p className="font-body-md text-body-md text-secondary mb-4 text-sm">ZX MT Petrol</p>
+<div className="mt-auto">
+<div className="font-headline-md text-headline-md font-bold text-primary mb-4">₹9.80 Lakh</div>
+<button className="w-full py-2.5 border-2 border-primary text-primary rounded-lg font-body-md text-body-md font-semibold hover:bg-primary hover:text-white transition-colors duration-300">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<div className="mt-8 text-center md:hidden">
+<a className="inline-flex items-center gap-2 font-body-md text-body-md font-medium text-primary border border-primary px-6 py-3 rounded-lg w-full justify-center" href="#">
+                View All Inventory
+            </a>
+</div>
+</section>
 
-            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
-              <select 
-                value={searchParams.model} onChange={(e) => setSearchParams({...searchParams, model: e.target.value})}
-                disabled={availableModels.length === 0}
-                className="select-premium w-full h-[60px] px-6 text-sm font-medium disabled:opacity-40"
-              >
-                <option value="">Any Model</option>
-                {availableModels.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
+<section className="bg-surface-container-low py-24 border-y border-outline-variant">
+<div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div className="text-center mb-16 max-w-2xl mx-auto">
+<h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary font-bold mb-4">The Hariram Advantage</h2>
+<p className="font-body-md text-body-md text-secondary">We don&apos;t just sell cars; we deliver peace of mind. Our structured approach ensures every vehicle meets the highest standards.</p>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04]">
-              <select 
-                value={searchParams.budget} onChange={(e) => setSearchParams({...searchParams, budget: e.target.value})}
-                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
-              >
-                <option value="">Any Budget</option>
-                <option value="0-500000">Under ₹5 Lakh</option>
-                <option value="500000-1000000">₹5 Lakh - ₹10 Lakh</option>
-                <option value="1000000-2000000">₹10 Lakh - ₹20 Lakh</option>
-                <option value="2000000-99999999">Above ₹20 Lakh</option>
-              </select>
-            </div>
+<div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm hover:shadow-[0_4px_20px_rgba(15,23,42,0.08)] transition-shadow">
+<div className="w-14 h-14 bg-primary-fixed rounded-xl flex items-center justify-center mb-6">
+<span className="material-symbols-outlined text-primary text-3xl">verified</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-3">Certified Quality</h3>
+<p className="font-body-md text-body-md text-secondary">Every vehicle undergoes a rigorous 150-point inspection by our master technicians. We guarantee structural integrity and pristine mechanical condition.</p>
+</div>
 
-            <div className="flex-1 border-b md:border-b-0 md:border-r border-white/[0.04] hidden lg:block">
-              <select 
-                value={searchParams.fuel} onChange={(e) => setSearchParams({...searchParams, fuel: e.target.value})}
-                className="select-premium w-full h-[60px] px-6 text-sm font-medium"
-              >
-                <option value="">Any Fuel</option>
-                <option value="Petrol">Petrol</option>
-                <option value="Diesel">Diesel</option>
-                <option value="CNG">CNG</option>
-                <option value="Electric">Electric</option>
-              </select>
-            </div>
+<div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm hover:shadow-[0_4px_20px_rgba(15,23,42,0.08)] transition-shadow">
+<div className="w-14 h-14 bg-secondary-fixed rounded-xl flex items-center justify-center mb-6">
+<span className="material-symbols-outlined text-primary text-3xl">account_balance</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-3">Easy Financing</h3>
+<p className="font-body-md text-body-md text-secondary">Partnered with top banks in Surat to offer competitive interest rates and seamless, frictionless loan processing. Get approved in hours, not days.</p>
+</div>
 
-            <button 
-              onClick={handleSearch}
-              className="md:w-auto px-10 h-[60px] bg-purple-600 hover:bg-purple-500 text-white font-bold tracking-widest uppercase text-xs transition-colors flex items-center justify-center gap-2 rounded-b-2xl md:rounded-none md:rounded-r-2xl"
-            >
-              <IconSearch size={18} stroke={2} /> Search
-            </button>
-          </div>
-        </div>
-      </div>
+<div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm hover:shadow-[0_4px_20px_rgba(15,23,42,0.08)] transition-shadow">
+<div className="w-14 h-14 bg-tertiary-fixed rounded-xl flex items-center justify-center mb-6">
+<span className="material-symbols-outlined text-on-tertiary-fixed-variant text-3xl">support_agent</span>
+</div>
+<h3 className="font-headline-md text-headline-md font-bold text-primary mb-3">Expert Support</h3>
+<p className="font-body-md text-body-md text-secondary">Our dedicated team provides transparent advice and continuous post-sale support. We handle the paperwork, RTO transfers, and insurance for you.</p>
+</div>
+</div>
+</div>
+</section>
 
-      {/* ════ SECTION 3: REFINED STATS ════ */}
-      <section className="py-16 relative z-20 overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute inset-0 bg-radial-gradient opacity-50" />
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12">
-            {[
-              { icon: IconUsers, count: 500, suffix: '+', label: 'Happy Customers' },
-              { icon: IconCar, count: 150, suffix: '+', label: 'Cars in Stock' },
-              { icon: IconCalendarEvent, count: 10, suffix: '+', label: 'Years of Trust' },
-              { icon: IconShieldCheck, count: 100, suffix: '%', label: 'Transparency' },
-            ].map((stat, i) => (
-              <div key={i} className={`text-center ${i !== 3 && i !== 1 ? 'border-r border-white/[0.03]' : ''} md:border-r md:last:border-none`}>
-                <stat.icon size={32} stroke={1.5} className="text-slate-500 mx-auto mb-4" />
-                <h3 className="text-[40px] font-bold text-white mb-1 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  <AnimatedCounter end={stat.count} />{stat.suffix}
-                </h3>
-                <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+<section className="py-16 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div className="relative w-full rounded-2xl overflow-hidden bg-primary-container h-[300px] md:h-[400px] flex items-center shadow-[0_8px_30px_rgba(15,23,42,0.15)] group">
+<div className="absolute inset-0 z-0">
+<img alt="Special Offer" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A wide, dynamic shot of a steering wheel and dashboard of a luxury sedan, lit by golden hour sunlight streaming through the window. The interior details are crisp, showcasing premium leather and advanced infotainment screens. The image sets a highly desirable, aspirational mood, fitting for a special financing offer at a modern, high-end pre-owned dealership." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFVj0yX6UUfAcFg5Kcb9hGCywFJfeho_9jmJBDjg5ACJdUczDDwrY-uqg89tafpUZ4a_WzOFBimRTZjsuG-5sSRukPTDxxPv9J8UlBwaRZFO9e-s_skEVPX4L34a_pnGl4EpsahA94GEqRlNmo64cskZPBT_tzAMFvjnBr17E0s3D0neuyQmr3F0XG7p2YaL9XO_4DnCks8YZkmqBkJ3JKs_n9_vzdMAxPW3j-z7p-BAV3TC4ZCvPX8Pd10E7XKgb7GFCh2jwLk0U"/>
+<div className="absolute inset-0 bg-gradient-to-r from-primary-container via-primary-container/80 to-transparent z-10"></div>
+</div>
+<div className="relative z-20 p-8 md:p-16 max-w-2xl text-on-primary">
+<span className="inline-block px-3 py-1 mb-4 rounded bg-[#FF5A00]/20 text-[#FF5A00] border border-[#FF5A00]/30 font-label-sm text-label-sm font-bold uppercase tracking-wider backdrop-blur-sm">
+                    Festive Offer
+                </span>
+<h2 className="font-display-lg text-[32px] md:text-display-lg font-extrabold mb-4 leading-tight">Zero Processing Fee on Top SUVs</h2>
+<p className="font-body-lg text-body-lg text-secondary-fixed-dim mb-8 max-w-md">
+                    Upgrade to a premium SUV this month and enjoy exclusive financing benefits with our partner banks. Offer valid till month-end.
+                </p>
+<button className="px-6 py-3 bg-white text-primary rounded-lg font-body-md text-body-md font-bold hover:bg-surface-container-highest transition-colors duration-300 flex items-center gap-2">
+                    Claim Offer
+                    <span className="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
 
-      {/* ════ SECTION 4: FEATURED CARS ════ */}
-      <section className="py-20 md:py-32 relative">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-end mb-16 gap-6">
-            <div>
-              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">OUR INVENTORY</p>
-              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Featured Models
-              </h2>
-            </div>
-            <Link href="/catalog" className="text-slate-300 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 group transition-colors pb-2 border-b border-transparent hover:border-white/30">
-              View All Cars <IconArrowRight size={16} stroke={2} className="group-hover:translate-x-2 transition-transform duration-300" />
-            </Link>
-          </div>
+<section className="py-24 bg-surface relative overflow-hidden">
 
-          {loadingCars ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="glass-premium overflow-hidden animate-pulse">
-                  <div className="aspect-[4/3] bg-white/[0.02]" />
-                  <div className="p-6 space-y-4">
-                    <div className="h-6 bg-white/[0.03] rounded-md w-3/4" />
-                    <div className="h-4 bg-white/[0.03] rounded-md w-full" />
-                    <div className="h-10 bg-white/[0.03] rounded-md w-full mt-6" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : cars.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {cars.map((car, i) => (
-                <CarCard key={car._id} car={car} index={i} />
-              ))}
-            </div>
-          ) : (
-             <div className="text-center py-20 text-slate-400 glass-premium font-light">
-               No cars currently featured. Browse our catalog for more.
-             </div>
-          )}
-        </div>
-      </section>
+<div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, black 1px, transparent 0) background-size" }}></div>
+<div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
+<h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary font-bold mb-12 text-center">Happy Customers</h2>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-      {/* ════ SECTION 5: AD BANNERS ════ */}
-      {banners.length > 0 && (
-        <section className="py-20 md:py-32 bg-[#0A0A12] border-y border-white/[0.02]">
-          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-center">OFFERS & PROMOTIONS</p>
-            <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight mb-16 text-center tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-              Exclusive Deals
-            </h2>
+<div className="bg-surface/60 backdrop-blur-md p-8 rounded-xl border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.05)] relative">
+<span className="material-symbols-outlined absolute top-6 right-6 text-4xl text-outline-variant opacity-30">format_quote</span>
+<div className="flex gap-1 text-[#FF5A00] mb-4">
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+</div>
+<p className="font-body-md text-body-md text-secondary italic mb-6">
+                        &quot;The transparency at Hariram Motors is unmatched in Surat. The detailed inspection report gave me the confidence to buy my Creta without second thoughts. Smooth paperwork process too.&quot;
+                    </p>
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container">R</div>
+<div>
+<div className="font-headline-md text-sm font-bold text-primary">Rahul Desai</div>
+<div className="font-label-sm text-label-sm text-secondary">Bought Hyundai Creta</div>
+</div>
+</div>
+</div>
 
-            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/[0.05]" ref={bannerRef}>
-              <div className="flex">
-                {banners.map((b) => (
-                  <div key={b._id} className="flex-[0_0_100%] min-w-0 relative h-[320px] sm:h-[450px]">
-                    <Image src={b.desktopImageUrl} alt="Promo" fill className="object-cover hidden sm:block" />
-                    <Image src={b.mobileImageUrl} alt="Promo" fill className="object-cover sm:hidden" />
-                    <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+<div className="bg-surface/60 backdrop-blur-md p-8 rounded-xl border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.05)] relative transform md:-translate-y-4">
+<span className="material-symbols-outlined absolute top-6 right-6 text-4xl text-outline-variant opacity-30">format_quote</span>
+<div className="flex gap-1 text-[#FF5A00] mb-4">
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+</div>
+<p className="font-body-md text-body-md text-secondary italic mb-6">
+                        &quot;I wanted to sell my Swift and upgrade. They offered a very competitive price for my old car and the exchange for the Fortuner was seamless. Highly professional team.&quot;
+                    </p>
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">A</div>
+<div>
+<div className="font-headline-md text-sm font-bold text-primary">Amit Patel</div>
+<div className="font-label-sm text-label-sm text-secondary">Upgraded to Fortuner</div>
+</div>
+</div>
+</div>
 
-      {/* ════ SECTION 6: WHY CHOOSE US ════ */}
-      <section className="py-20 md:py-32">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-            
-            <div className="lg:col-span-5">
-              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">THE HARIRAM DIFFERENCE</p>
-              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight mb-8 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Excellence in <br /> Every Drive.
-              </h2>
-              <p className="text-slate-400 mb-10 leading-relaxed font-light text-lg">
-                For over a decade, we have redefined the pre-owned car buying experience in Surat. No pressure, absolute transparency, and meticulous curation.
-              </p>
-              <Link href="/about" className="inline-flex items-center gap-3 text-white font-bold uppercase tracking-widest text-xs transition-all group">
-                <span className="pb-1 border-b border-purple-500">Discover Our Story</span>
-                <IconArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
-              </Link>
-            </div>
+<div className="bg-surface/60 backdrop-blur-md p-8 rounded-xl border border-outline-variant shadow-[0_4px_20px_rgba(15,23,42,0.05)] relative">
+<span className="material-symbols-outlined absolute top-6 right-6 text-4xl text-outline-variant opacity-30">format_quote</span>
+<div className="flex gap-1 text-[#FF5A00] mb-4">
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined icon-fill">star</span>
+<span className="material-symbols-outlined">star_half</span>
+</div>
+<p className="font-body-md text-body-md text-secondary italic mb-6">
+                        &quot;Excellent collection of premium cars. The sales executive was knowledgeable and didn&apos;t push for a sale. The loan was approved within hours. Great experience overall.&quot;
+                    </p>
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold">N</div>
+<div>
+<div className="font-headline-md text-sm font-bold text-primary">Neha Shah</div>
+<div className="font-label-sm text-label-sm text-secondary">Bought Honda City</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[
-                { icon: IconShieldCheck, title: 'Verified Quality', desc: '100-point rigorous mechanical inspection.' },
-                { icon: IconCurrencyRupee, title: 'Transparent Value', desc: 'Zero hidden charges. Pure honesty.' },
-                { icon: IconCertificate, title: 'Seamless Paperwork', desc: 'RC, insurance, and NOC handled for you.' },
-                { icon: IconHeadset, title: 'Dedicated Support', desc: 'Post-purchase assistance you can rely on.' },
-              ].map((feat, i) => (
-                <div key={i} className="glass-premium p-8 group">
-                  <div className="mb-6 text-slate-500 group-hover:text-purple-400 transition-colors duration-500">
-                    <feat.icon size={36} stroke={1.5} />
-                  </div>
-                  <h3 className="text-white font-bold text-xl mb-3 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{feat.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed font-light">{feat.desc}</p>
-                </div>
-              ))}
-            </div>
+<section className="bg-primary text-on-primary py-12 border-b-4 border-[#FF5A00]">
+<div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-6">
+<div className="flex items-center gap-4 text-center md:text-left">
+<div className="w-12 h-12 rounded-full bg-[#FF5A00]/20 flex items-center justify-center text-[#FF5A00]">
+<span className="material-symbols-outlined icon-fill text-2xl">forum</span>
+</div>
+<div>
+<h3 className="font-headline-md text-headline-md font-bold mb-1">Need help?</h3>
+<p className="font-body-md text-body-md text-secondary-fixed-dim">WhatsApp us for instant car inquiries or booking a test drive.</p>
+</div>
+</div>
+<a className="w-full md:w-auto px-8 py-4 bg-[#25D366] text-white rounded-lg font-body-md text-body-md font-bold hover:bg-[#1ebe57] transition-all duration-300 shadow-[0_4px_15px_rgba(37,211,102,0.3)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.4)] flex items-center justify-center gap-2 scale-102" href="#">
+<svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path>
+</svg>
+                Chat on WhatsApp
+            </a>
+</div>
+</section>
 
-          </div>
-        </div>
-      </section>
 
-      {/* ════ SECTION 7: TESTIMONIALS ════ */}
-      <section className="py-20 md:py-32 overflow-hidden bg-[#0A0A12] border-t border-white/[0.02]">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-16">
-            <div>
-              <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">CLIENT STORIES</p>
-              <h2 className="text-4xl md:text-5xl text-white font-bold leading-tight tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-                Driven by Trust
-              </h2>
-            </div>
-            <div className="hidden md:flex gap-4">
-              <button onClick={scrollPrev} className="w-12 h-12 rounded-full glass-premium flex items-center justify-center text-slate-300 hover:text-white hover:border-purple-500/50 transition-all">
-                <IconChevronLeft size={24} stroke={1.5} />
-              </button>
-              <button onClick={scrollNext} className="w-12 h-12 rounded-full glass-premium flex items-center justify-center text-slate-300 hover:text-white hover:border-purple-500/50 transition-all">
-                <IconChevronRight size={24} stroke={1.5} />
-              </button>
-            </div>
-          </div>
-
-          {loadingTestimonials ? (
-             <div className="flex gap-8">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex-1 glass-premium h-72 animate-pulse" />
-                ))}
-             </div>
-          ) : testimonials.length > 0 ? (
-            <div className="overflow-visible" ref={testiRef}>
-              <div className="flex gap-8 -ml-4 pl-4 pr-4 sm:pr-0">
-                {testimonials.map((t) => (
-                  <div key={t._id} className="flex-[0_0_90%] sm:flex-[0_0_45%] lg:flex-[0_0_31%] min-w-0 glass-premium p-10 flex flex-col justify-between">
-                    <div>
-                      <div className="flex gap-1 mb-6 text-purple-400 opacity-80">
-                        {[...Array(t.rating || 5)].map((_, j) => <IconStarFilled key={j} size={14} />)}
-                      </div>
-                      <p className="text-slate-300 text-lg leading-relaxed mb-8 font-light italic">
-                        "{t.review}"
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-5">
-                      {t.photo?.url ? (
-                        <Image src={t.photo.url} alt={t.customerName} width={48} height={48} className="w-12 h-12 rounded-full object-cover grayscale opacity-80" />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 font-bold text-lg">
-                          {t.customerName?.charAt(0) || 'U'}
-                        </div>
-                      )}
-                      <div>
-                        <p className="text-white font-bold tracking-tight">{t.customerName}</p>
-                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Bought {t.carModel || 'Car'}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </section>
-
-      {/* ════ SECTION 8: CTA ════ */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/40 to-blue-900/20" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000')] bg-cover bg-center opacity-10 mix-blend-overlay" />
-        
-        <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-5xl md:text-7xl text-white font-bold mb-6 tracking-tighter" style={{ fontFamily: 'var(--font-outfit)' }}>
-            Ready for an Upgrade?
-          </h2>
-          <p className="text-slate-300 text-xl leading-relaxed font-light mb-12 max-w-2xl mx-auto">
-            Get the best market valuation for your used car in Surat. Transparent inspection, instant payment, zero hassle.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Link href="/sell-your-car" className="bg-white text-[#05050A] font-bold px-10 py-5 rounded-full text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] flex items-center gap-3">
-              Get Free Valuation <IconArrowRight size={18} stroke={2} />
-            </Link>
-            <p className="text-slate-400 text-sm font-medium">Or speak to an expert at <br className="sm:hidden" /><span className="text-white">93734 82016</span></p>
-          </div>
-        </div>
-      </section>
 
     </>
   );

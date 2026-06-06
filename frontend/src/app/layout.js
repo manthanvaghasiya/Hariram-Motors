@@ -47,8 +47,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
-      <body className="font-[var(--font-inter)]">
-        <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+      <body className="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <link href="https://fonts.googleapis.com" rel="preconnect"/>
+          <link crossOrigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+          <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+          <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
           <Toaster
             position="top-right"
             toastOptions={{
