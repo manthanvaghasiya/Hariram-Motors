@@ -1,0 +1,147 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, Car, MessageSquare, HandCoins, Image, Users, Settings, LogOut, Menu, X, ChevronRight } from 'lucide-react';
+import api from '@/lib/api';
+
+const adminNav = [
+  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/inventory', label: 'Inventory', icon: Car },
+  { href: '/admin/sell-requests', label: 'Sell Requests', icon: HandCoins },
+  { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
+  { href: '/admin/happy-customers', label: 'Testimonials', icon: Users },
+  { href: '/admin/banners', label: 'Banners', icon: Image },
+  { href: '/admin/settings', label: 'Settings', icon: Settings },
+];
+
+export default function AdminLayout({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const verify = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No token');
+        const res = await api.get('/auth/verify');
+        setUser(res.data.user);
+      } catch {
+        if (pathname !== '/admin/login') {
+          router.push('/admin/login');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    verify();
+  }, [pathname, router]);
+
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch {}
+    localStorage.removeItem('token');
+    router.push('/admin/login');
+  };
+
+  // Login page — no sidebar
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-dark)]">
+        <div className="animate-spin w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg-dark)] flex">
+      {/* Sidebar */}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="p-5 border-b border-[var(--color-border)] flex items-center justify-between">
+            <Link href="/admin/dashboard" className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center">
+                <Car size={18} className="text-[#0f0f1a]" />
+              </div>
+              <span className="text-sm font-bold">Admin Panel</span>
+            </Link>
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-[var(--color-text-muted)]">
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Nav Links */}
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+            {adminNav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  pathname === item.href || (item.href !== '/admin/dashboard' && pathname?.startsWith(item.href))
+                    ? 'bg-[rgba(226,176,74,0.1)] text-[var(--color-primary)]'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[rgba(255,255,255,0.04)]'
+                }`}
+              >
+                <item.icon size={18} />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* User & Logout */}
+          <div className="p-4 border-t border-[var(--color-border)]">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-[#0f0f1a] text-xs font-bold">
+                {user.name?.[0]?.toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{user.name}</p>
+                <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
+              </div>
+            </div>
+            <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-accent-red)] hover:bg-[rgba(248,113,113,0.1)] rounded-xl transition-colors">
+              <LogOut size={16} /> Logout
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Top Bar */}
+        <header className="h-16 bg-[var(--color-bg-card)] border-b border-[var(--color-border)] flex items-center px-4 lg:px-6">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+            <Menu size={22} />
+          </button>
+          <div className="flex-1" />
+          <Link href="/" target="_blank" className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors">
+            View Website <ChevronRight size={14} />
+          </Link>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
