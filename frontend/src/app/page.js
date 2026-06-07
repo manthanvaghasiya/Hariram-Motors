@@ -60,7 +60,7 @@ export default function HomePage() {
       <HeroSection />
 
       {/* ════ SECTION 3: PREMIUM DEALERSHIP SERVICES ════ */}
-      <section className="py-20 bg-[#0a0a12] relative overflow-hidden">
+      <section className="pt-32 pb-20 bg-[#0a0a12] relative z-10 overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(168,85,247,0.8)]"></div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-20 bg-purple-600/20 blur-[80px]"></div>

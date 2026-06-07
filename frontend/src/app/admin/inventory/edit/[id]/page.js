@@ -336,15 +336,16 @@ export default function EditCarPage() {
       formData.append('description', data.description);
       formData.append('status', 'available');
       
-      if (data.isCertified) formData.append('badges', 'Certified');
-      if (data.isPetipack) formData.append('badges', 'Peti-pack');
-      if (data.validVimo) formData.append('badges', 'Valid Vimo');
+      const badges = [];
+      if (data.isCertified) badges.push('Certified');
+      if (data.isPetipack) badges.push('Peti-pack');
+      if (data.validVimo) badges.push('Valid Vimo');
+      formData.append('badges', JSON.stringify(badges));
+      
       formData.append('loanAvailable', String(data.loanAvailable));
       formData.append('isKmGenuine', String(data.isKmGenuine));
 
-      if (data.selectedFeatures && data.selectedFeatures.length > 0) {
-        data.selectedFeatures.forEach(f => formData.append('features', f));
-      }
+      formData.append('features', JSON.stringify(data.selectedFeatures || []));
 
       // Handle images
       formData.append('existingImages', JSON.stringify(existingImages));

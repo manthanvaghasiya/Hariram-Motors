@@ -113,64 +113,67 @@ export default function HeroSection() {
   const imageVariants = {
     hidden: { scale: 1.1, opacity: 0 },
     visible: {
-      scale: 1,
+      scale: 1.05,
       opacity: 1,
       transition: {
-        duration: 1.5,
-        ease: "easeOut"
+        opacity: { duration: 1.5, ease: "easeOut" },
+        scale: { duration: 30, repeat: Infinity, repeatType: "reverse", ease: "linear" }
       }
     }
   };
 
   return (
-    <section className="relative flex flex-col min-h-[60vh] md:min-h-[85vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#0a0a12] md:bg-transparent overflow-hidden pt-16">
+    <section className="relative flex flex-col min-h-[65vh] md:min-h-[70vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#050508] z-20">
 
       {/* ════════════════════════════════════════════════════════════════
           DESKTOP BACKGROUND (Hidden on mobile)
       ════════════════════════════════════════════════════════════════ */}
-      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
+      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden bg-[#050508]">
         <motion.img
           initial="hidden"
           animate="visible"
           variants={imageVariants}
-          src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop"
+          src="/images/hero_bg_desktop.png"
           alt="Premium Car"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-[center_60%] origin-[center_60%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a12] via-[#0a0a12]/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a12]/95 via-[#0a0a12]/40 to-transparent"></div>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════
           MOBILE 100DVH LUXURY POSTER (Hidden on desktop)
       ════════════════════════════════════════════════════════════════ */}
-      <div className="md:hidden absolute inset-0 w-full h-[60vh] z-0 overflow-hidden">
+      <div className="md:hidden absolute inset-0 w-full h-full z-0 overflow-hidden bg-[#050508]">
         <motion.img
           initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.8, ease: "easeOut" }}
-          src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?w=800&q=80"
+          animate={{ scale: 1.05, opacity: 1 }}
+          transition={{
+            opacity: { duration: 1.8, ease: "easeOut" },
+            scale: { duration: 30, repeat: Infinity, repeatType: "reverse", ease: "linear" }
+          }}
+          src="/images/hero_bg_mobile.png"
           alt="Premium Car"
-          className="absolute inset-0 w-full h-full object-cover object-center z-0"
+          className="absolute inset-0 w-full h-full object-cover object-[center_60%] z-0 origin-[center_60%]"
         />
         {/* Deep cinematic vignette gradient */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/40 to-[#0a0a12]/70"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/40 to-[#0a0a12]/80"></div>
 
         {/* Mobile Content Overlay */}
-        <div className="absolute inset-x-0 top-[20%] z-10 px-6 flex flex-col items-center text-center">
+        <div className="absolute inset-x-0 top-[20%] z-10 px-6 flex flex-col items-start text-left">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-3xl sm:text-4xl text-white font-bold tracking-tight leading-[1.1] drop-shadow-2xl" style={{ fontFamily: 'var(--font-outfit)' }}
+            className="text-4xl sm:text-5xl text-white font-medium tracking-wide leading-tight drop-shadow-lg" style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Your <span className="text-purple-500">Dream Car,</span><br />Now Within Reach!
+            Your <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]">Dream Car,</span> Now Within Reach!
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="mt-4 text-white/80 text-sm font-medium tracking-wide max-w-[300px]"
+            className="mt-4 text-white/80 text-sm font-medium tracking-wide max-w-[320px]"
           >
             Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
           </motion.p>
@@ -179,7 +182,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="mt-8 flex flex-col items-center gap-3 w-full"
+            className="mt-8 flex flex-col items-start gap-3 w-full"
           >
             {/* Mobile Trust Badge with Google Reviews */}
             <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20">
@@ -342,21 +345,21 @@ export default function HeroSection() {
           DESKTOP CONTENT (Hidden on mobile)
       ════════════════════════════════════════════════════════════════ */}
       <motion.div
-        className="hidden md:flex flex-col items-center justify-center relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32"
+        className="hidden md:flex flex-col items-start justify-center relative z-10 w-full max-w-7xl mx-auto px-8 md:px-12 -mt-16"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div className="max-w-3xl text-left flex flex-col items-start">
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-bold tracking-tight leading-[1.1] drop-shadow-2xl" style={{ fontFamily: 'var(--font-outfit)' }}
+            className="text-5xl sm:text-6xl md:text-7xl text-white font-medium tracking-wide leading-[1.15] drop-shadow-xl" style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Your <span className="text-purple-500">Dream Car,</span><br />Now Within Your Reach!
+            Your <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-500 to-blue-500 drop-shadow-[0_0_30px_rgba(168,85,247,0.5)]">Dream Car,</span> Now Within Your Reach!
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-slate-200 mt-6 max-w-2xl font-medium leading-relaxed drop-shadow-md mx-auto"
+            className="text-lg md:text-xl text-slate-200 mt-6 max-w-2xl font-medium leading-relaxed drop-shadow-md"
           >
             Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
           </motion.p>
@@ -364,7 +367,7 @@ export default function HeroSection() {
           {/* Trust Badges & Details (Desktop) */}
           <motion.div
             variants={itemVariants}
-            className="mt-10 flex flex-row items-center justify-center gap-8"
+            className="mt-10 flex flex-row items-center justify-start gap-6"
           >
             <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 group hover:bg-black/60 transition-all duration-300 shadow-xl cursor-default">
               <div className="flex items-center gap-0.5">
@@ -408,9 +411,9 @@ export default function HeroSection() {
         initial="hidden"
         animate="visible"
         variants={searchBarVariants}
-        className="hidden md:block absolute bottom-3 left-0 right-0 px-8 md:px-12 z-20"
+        className="hidden md:block absolute -bottom-[4.5rem] left-0 right-0 px-8 md:px-12 z-40"
       >
-        <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5),0_16px_32px_-8px_rgba(147,51,234,0.15)] rounded-[2rem] p-4 lg:p-6">
+        <div className="max-w-6xl mx-auto bg-[#0a0a12]/40 backdrop-blur-3xl border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6),0_0_32px_rgba(147,51,234,0.15)] rounded-[2rem] p-4 lg:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-end">
             {/* Brand */}
             <div className="relative group">

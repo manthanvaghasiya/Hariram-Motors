@@ -120,9 +120,12 @@ router.post('/', protect, adminOnly, upload.array('images', 20), async (req, res
   try {
     const carData = { ...req.body };
 
-    // Parse features if sent as JSON string
+    // Parse features and badges if sent as JSON string
     if (typeof carData.features === 'string') {
       try { carData.features = JSON.parse(carData.features); } catch { /* keep as is */ }
+    }
+    if (typeof carData.badges === 'string') {
+      try { carData.badges = JSON.parse(carData.badges); } catch { /* keep as is */ }
     }
 
     // Upload images to Cloudinary
@@ -156,6 +159,9 @@ router.put('/:id', protect, adminOnly, upload.array('images', 20), async (req, r
 
     if (typeof updateData.features === 'string') {
       try { updateData.features = JSON.parse(updateData.features); } catch { /* keep as is */ }
+    }
+    if (typeof updateData.badges === 'string') {
+      try { updateData.badges = JSON.parse(updateData.badges); } catch { /* keep as is */ }
     }
 
     // Handle existing images (kept)
