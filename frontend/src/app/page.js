@@ -8,7 +8,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { 
   IconCar, IconUsers, IconCalendarEvent, IconShieldCheck, IconArrowRight, 
-  IconCurrencyRupee, IconCertificate, IconHeadset, IconStarFilled, IconChevronLeft, IconChevronRight, IconArrowsExchange
+  IconCurrencyRupee, IconCertificate, IconHeadset, IconStarFilled, IconChevronLeft, IconChevronRight, IconArrowsExchange, IconMessageCircle
 } from '@tabler/icons-react';
 
 import CarCard from '@/components/CarCard';
@@ -26,7 +26,7 @@ export default function HomePage() {
 
   // Embla Carousels
   const [bannerRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
-  const [testiRef, testiApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' });
+  const [testiRef, testiApi] = useEmblaCarousel({ loop: true, align: 'center' }, [Autoplay({ delay: 3500, stopOnInteraction: false })]);
 
   // Testimonial Controls
   const scrollPrev = useCallback(() => testiApi && testiApi.scrollPrev(), [testiApi]);
@@ -305,32 +305,41 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="overflow-visible" ref={testiRef}>
+            <div className="overflow-visible w-full pt-4" ref={testiRef}>
               <div className="flex gap-4 sm:gap-6 -ml-4 pl-4 pr-4 sm:pr-0">
-                {testimonials.map((t) => (
-                  <div key={t._id} className="flex-[0_0_90%] sm:flex-[0_0_48%] lg:flex-[0_0_31%] min-w-[280px] bg-[#12121f] border border-white/10 rounded-3xl overflow-hidden flex flex-col group">
-                    {/* Full Photo */}
-                    <div className="relative aspect-[4/3] w-full bg-white/5 border-b border-white/10 overflow-hidden">
+                {/* Duplicate items to ensure Embla can loop seamlessly even with very few testimonials */}
+                {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((t, index) => (
+                  <div key={`${t._id}-${index}`} className="relative w-[280px] sm:w-[320px] h-[380px] sm:h-[420px] shrink-0 rounded-2xl overflow-hidden group shadow-[0_15px_40px_rgba(0,0,0,0.5)] transition-all duration-500 cursor-grab active:cursor-grabbing border border-white/5 bg-[#12121f]">
+                    
+                    {/* Full Card Photo */}
+                    <div className="absolute inset-0 w-full h-full overflow-hidden">
                       {t.photo?.url ? (
-                        <Image src={t.photo.url} alt={t.customerName} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image src={t.photo.url} alt={t.customerName} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-purple-400/50">
-                          No Photo
-                        </div>
+                        <div className="w-full h-full flex items-center justify-center text-purple-500/30">No Photo</div>
                       )}
                     </div>
-                    {/* Content */}
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="text-xl font-bold text-white mb-1">{t.customerName}</h3>
-                      <p className="text-purple-400 font-medium text-sm mb-4">
-                        Took delivery of {t.carModel || 'a vehicle'}
+                    
+                    {/* Protective Dark Gradient Overlay */}
+                    {/* Smooth permanent gradient so the button is always perfectly readable over any photo */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/80 to-transparent pointer-events-none z-10 transition-all duration-500 group-hover:h-[60%]"></div>
+                    
+                    {/* Hover Content Section (Review Text) */}
+                    <div className="absolute inset-x-0 bottom-[60px] px-6 pb-2 pt-10 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20 pointer-events-none">
+                      <p className="text-white text-[14px] leading-relaxed font-medium line-clamp-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        "{t.review || t.description || "Had a fantastic experience purchasing my dream car. Highly recommended!"}"
                       </p>
-                      {t.review && (
-                        <p className="text-gray-300 text-sm leading-relaxed italic mt-auto">
-                          "{t.review}"
-                        </p>
-                      )}
                     </div>
+
+                    {/* Customer Name Area (Matches Reference Image) */}
+                    <div className="absolute bottom-5 left-6 right-6 z-30 pointer-events-auto flex flex-col items-start">
+                      <span className="text-white font-black text-[14px] sm:text-[16px] tracking-wide uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] line-clamp-1" style={{ fontFamily: 'var(--font-outfit)' }}>
+                        {t.customerName}
+                      </span>
+                      {/* Small decorative underline from reference image */}
+                      <div className="w-8 h-[3px] bg-gradient-to-r from-purple-600 to-red-600 rounded-full mt-1"></div>
+                    </div>
+
                   </div>
                 ))}
               </div>

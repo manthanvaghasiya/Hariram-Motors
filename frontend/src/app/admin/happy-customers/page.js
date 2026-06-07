@@ -13,7 +13,7 @@ export default function AdminHappyCustomersPage() {
   
   // Form State
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ customerName: '', carModel: '', description: '' });
+  const [form, setForm] = useState({ customerName: '', description: '' });
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
@@ -47,7 +47,7 @@ export default function AdminHappyCustomersPage() {
   };
 
   const resetForm = () => {
-    setForm({ customerName: '', carModel: '', description: '' });
+    setForm({ customerName: '', description: '' });
     setPhoto(null);
     setPreview(null);
     setEditingId(null);
@@ -58,7 +58,6 @@ export default function AdminHappyCustomersPage() {
     setEditingId(customer._id);
     setForm({
       customerName: customer.customerName || '',
-      carModel: customer.carModel || '',
       description: customer.description || customer.review || ''
     });
     setPhoto(null);
@@ -75,7 +74,6 @@ export default function AdminHappyCustomersPage() {
     try {
       const fd = new FormData();
       fd.append('customerName', form.customerName);
-      fd.append('carModel', form.carModel);
       // Map description to review for backend compatibility if needed
       fd.append('description', form.description);
       fd.append('review', form.description);
@@ -143,22 +141,6 @@ export default function AdminHappyCustomersPage() {
                     className="w-full bg-white/5 border border-white/10 text-white text-[15px] rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 block pl-11 p-3.5 transition-all placeholder:text-gray-600 hover:border-white/20" 
                     placeholder="e.g. Rahul Sharma" 
                     required 
-                  />
-                </div>
-              </div>
-              
-              {/* Car Model */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-400 tracking-wide">Car Model</label>
-                <div className="relative group/input">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within/input:text-purple-400 transition-colors">
-                    <Car size={18} />
-                  </div>
-                  <input 
-                    value={form.carModel} 
-                    onChange={(e) => setForm({ ...form, carModel: e.target.value })} 
-                    className="w-full bg-white/5 border border-white/10 text-white text-[15px] rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 block pl-11 p-3.5 transition-all placeholder:text-gray-600 hover:border-white/20" 
-                    placeholder="e.g. Hyundai Creta (2022)" 
                   />
                 </div>
               </div>
@@ -266,7 +248,6 @@ export default function AdminHappyCustomersPage() {
                       
                       <div className="p-4">
                         <h4 className="font-bold text-[15px] truncate">{c.customerName}</h4>
-                        {c.carModel && <p className="text-xs text-[var(--color-primary)] font-semibold mt-0.5">{c.carModel}</p>}
                         {c.description && <p className="text-xs text-[var(--color-text-secondary)] mt-2 line-clamp-2 leading-relaxed">{c.description}</p>}
                       </div>
                     </div>
