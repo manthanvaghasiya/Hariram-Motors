@@ -101,7 +101,8 @@ export default function CarDetailPage() {
     );
   }
 
-  const yearText = car.year ? (car.registerYear && car.registerYear !== car.year ? `(${car.year} - Reg ${car.registerYear})` : `(${car.year})`) : '';
+  const displayYear = car.registerYear || car.year;
+  const yearText = displayYear ? `(${displayYear})` : '';
   const title = `${car.make} ${car.model} ${yearText}`.trim();
   const images = car.images || [];
 
