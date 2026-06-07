@@ -156,14 +156,7 @@ export default function CarDetailPage() {
                 <div className="w-full h-full flex items-center justify-center text-gray-600 bg-white/5">No Image Available</div>
               )}
               
-              {/* Photo Badges */}
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                {photoBadges.map((badge, i) => (
-                  <span key={i} className="bg-purple-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-purple-500/30">
-                    {badge}
-                  </span>
-                ))}
-              </div>
+
 
               {isSold && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] pointer-events-none z-10">
@@ -239,15 +232,26 @@ export default function CarDetailPage() {
                 {formatPrice(car.price)}
               </p>
               
-              {/* Loan Info */}
-              {isLoanAvailable && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-xl py-3 px-5">
-                    <IconShieldCheck className="text-purple-400" size={20} />
-                    <span className="text-sm font-bold text-purple-400 uppercase tracking-wide">
-                      Loan Available
-                    </span>
-                  </div>
+              {/* Badges & Loan Info */}
+              {(photoBadges.length > 0 || isLoanAvailable) && (
+                <div className="flex flex-wrap gap-3">
+                  {photoBadges.map((badge, i) => (
+                    <div key={`special-badge-${i}`} className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-purple-500/10 border border-purple-500/30 rounded-xl py-2 px-4 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
+                      <IconShieldCheck className="text-purple-400" size={18} />
+                      <span className="text-sm font-bold text-white uppercase tracking-wide">
+                        {badge}
+                      </span>
+                    </div>
+                  ))}
+
+                  {isLoanAvailable && (
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-2 px-4 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                      <IconShieldCheck className="text-emerald-400" size={18} />
+                      <span className="text-sm font-bold text-emerald-400 uppercase tracking-wide">
+                        Loan Available
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
