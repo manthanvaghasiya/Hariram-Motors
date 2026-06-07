@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconUpload, IconX, IconCheck, IconCar, IconCurrencyRupee, IconUser, IconPhone, IconMail, IconCalendar, IconDashboard } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
@@ -15,6 +15,43 @@ export default function SellYourCarPage() {
   const [photos, setPhotos] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [status, setStatus] = useState('idle'); // idle, loading, success
+
+  // Smart Sticky State for Left Column
+  const leftColumnRef = useRef(null);
+  const [stickyTop, setStickyTop] = useState('128px'); // default stick top
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!leftColumnRef.current) return;
+      const elementHeight = leftColumnRef.current.offsetHeight;
+      const windowHeight = window.innerHeight;
+      
+      // If element is taller than available window space
+      if (elementHeight > windowHeight - 128) {
+        // Stick to the bottom (negative top offset)
+        const top = windowHeight - elementHeight - 24;
+        setStickyTop(`${top}px`);
+      } else {
+        // Shorter than screen -> Stick to top
+        setStickyTop('128px');
+      }
+    };
+
+    // Delay slightly to ensure fonts/images are fully rendered
+    setTimeout(handleResize, 100);
+    window.addEventListener('resize', handleResize);
+    
+    let observer;
+    if (window.ResizeObserver && leftColumnRef.current) {
+      observer = new ResizeObserver(handleResize);
+      observer.observe(leftColumnRef.current);
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (observer) observer.disconnect();
+    };
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -120,7 +157,7 @@ export default function SellYourCarPage() {
   const inputClassName = "w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-[13px] text-white font-['Inter'] outline-none focus:border-purple-500 focus:bg-white/10 focus:ring-4 focus:ring-purple-600/20 transition-all placeholder-gray-500 hover:border-white/20";
 
   return (
-    <div className="bg-[#0a0a12] min-h-screen pt-28 pb-10 selection:bg-purple-500/30 relative overflow-hidden">
+    <div className="bg-[#0a0a12] min-h-screen pt-28 pb-10 selection:bg-purple-500/30 relative overflow-clip">
       
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none"></div>
@@ -131,7 +168,11 @@ export default function SellYourCarPage() {
           
           {/* LEFT COLUMN: Sticky Hero & Progress */}
           <div className="lg:col-span-5 relative">
-            <div className=" flex flex-col pt-4">
+            <div 
+              ref={leftColumnRef}
+              className="lg:sticky flex flex-col pt-4"
+              style={{ top: stickyTop }}
+            >
               
               <motion.div 
                 initial={{ opacity: 0, y: 30 }}
@@ -223,7 +264,7 @@ export default function SellYourCarPage() {
           </div>
 
           {/* RIGHT COLUMN: The Form */}
-          <div className="lg:col-span-7 pb-16">
+          <div className="lg:col-span-7 pb-32 lg:pb-16">
             
             {/* Progress Bar (Mobile) */}
             <div className="lg:hidden sticky top-20 z-40 bg-[#0a0a12]/80 backdrop-blur-xl py-4 mb-5 -mx-6 px-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
