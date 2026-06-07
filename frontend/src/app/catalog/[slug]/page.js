@@ -101,7 +101,8 @@ export default function CarDetailPage() {
     );
   }
 
-  const title = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ''}`.trim();
+  const yearText = car.year ? (car.registerYear && car.registerYear !== car.year ? `(${car.year} - Reg ${car.registerYear})` : `(${car.year})`) : '';
+  const title = `${car.make} ${car.model} ${yearText}`.trim();
   const images = car.images || [];
 
   const hasBadges = car.badges && car.badges.length > 0;
@@ -264,7 +265,7 @@ export default function CarDetailPage() {
                     <IconCalendarMonth size={20} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Year</p>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Mfg. Year</p>
                     <p className="text-base text-white font-semibold">{car.year || 'N/A'}</p>
                   </div>
                 </div>
