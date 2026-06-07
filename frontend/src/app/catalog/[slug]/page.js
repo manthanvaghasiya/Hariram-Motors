@@ -219,7 +219,7 @@ export default function CarDetailPage() {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <span className="bg-white/10 text-gray-300 px-2 py-1 rounded text-[10px] font-bold tracking-widest uppercase border border-white/10">
-                  {car.condition || 'Used'}
+                  Pre-Owned
                 </span>
                 {(car.registration || car.registrationState) && (
                   <span className="text-gray-400 text-xs font-medium uppercase">

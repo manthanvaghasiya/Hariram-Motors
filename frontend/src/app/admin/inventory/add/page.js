@@ -16,7 +16,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import VR360Uploader from '@/components/admin/VR360Uploader';
+
 import api from '@/lib/api';
 
 const COMMON_FEATURES = [
@@ -389,7 +389,7 @@ export default function AddCar() {
       airConditioner: '', powerWindows: '', sunroof: '', parkingSensors: '',
       displacement: '', maxPower: '', driveType: '', cylinders: '',
       isCertified: false, isPetipack: false, validVimo: false, loanAvailable: false, isKmGenuine: false,
-      spinImages: [], selectedFeatures: []
+      selectedFeatures: []
     }
   });
 
@@ -400,7 +400,6 @@ export default function AddCar() {
   const selectedFeatures = watch('selectedFeatures') || [];
 
   const [photos, setPhotos] = useState([]);
-  const [spinImages, setSpinImages] = useState([]);
   const [mainPhoto, setMainPhoto] = useState(0);
 
   const onSubmit = async (data) => {
@@ -425,9 +424,6 @@ export default function AddCar() {
       formData.append('description', data.description);
       formData.append('status', data.status);
       
-      if (spinImages.length > 0) {
-        spinImages.forEach((url) => formData.append('spinImages', url));
-      }
 
       formData.append('airConditioner', data.airConditioner);
       formData.append('powerWindows', data.powerWindows);
@@ -466,7 +462,6 @@ export default function AddCar() {
 
       reset();
       setPhotos([]);
-      setSpinImages([]);
       router.push('/admin/inventory');
     } catch (error) {
       console.error('Failed to publish car:', error);
