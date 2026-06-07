@@ -25,12 +25,15 @@ export default function HomePage() {
   const [loadingCars, setLoadingCars] = useState(true);
 
   // Embla Carousels
-  const [bannerRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
+  const [bannerRef, bannerApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [testiRef, testiApi] = useEmblaCarousel({ loop: true, align: 'center' }, [Autoplay({ delay: 3500, stopOnInteraction: false })]);
 
-  // Testimonial Controls
-  const scrollPrev = useCallback(() => testiApi && testiApi.scrollPrev(), [testiApi]);
-  const scrollNext = useCallback(() => testiApi && testiApi.scrollNext(), [testiApi]);
+  // Carousel Controls
+  const scrollTestiPrev = useCallback(() => testiApi && testiApi.scrollPrev(), [testiApi]);
+  const scrollTestiNext = useCallback(() => testiApi && testiApi.scrollNext(), [testiApi]);
+  
+  const scrollBannerPrev = useCallback(() => bannerApi && bannerApi.scrollPrev(), [bannerApi]);
+  const scrollBannerNext = useCallback(() => bannerApi && bannerApi.scrollNext(), [bannerApi]);
 
   // Fetch Data
   useEffect(() => {
@@ -242,36 +245,73 @@ export default function HomePage() {
       {/* ════ SECTION 6: ADVERTISEMENT BANNERS ════ */}
       {banners.length > 0 && (
         <section className="py-10 md:py-14 lg:py-20 bg-[#0a0a12]">
-          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <p className="text-purple-400 text-xs font-bold tracking-widest uppercase mb-3 text-center">OFFERS & PROMOTIONS</p>
             <h2 className="text-3xl md:text-[36px] text-white font-bold leading-tight mb-10 text-center" style={{ fontFamily: 'var(--font-outfit)' }}>
               Latest Deals
             </h2>
 
             {banners.length === 1 ? (
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full">
-                <img src={banners[0].desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
-                <img src={banners[0].mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full group">
+                {banners[0].link ? (
+                  <a href={banners[0].link} className="block w-full h-full">
+                    <img src={banners[0].desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block transition-transform duration-700 group-hover:scale-105" />
+                    <img src={banners[0].mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden transition-transform duration-700 group-hover:scale-105" />
+                  </a>
+                ) : (
+                  <>
+                    <img src={banners[0].desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
+                    <img src={banners[0].mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
+                  </>
+                )}
               </div>
             ) : banners.length === 2 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {banners.map((b) => (
-                  <div key={b._id} className="relative rounded-2xl overflow-hidden shadow-xl w-full">
-                     <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
-                     <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
+                  <div key={b._id} className="relative rounded-2xl overflow-hidden shadow-xl w-full group">
+                     {b.link ? (
+                       <a href={b.link} className="block w-full h-full">
+                         <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block transition-transform duration-700 group-hover:scale-[1.02]" />
+                         <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden transition-transform duration-700 group-hover:scale-[1.02]" />
+                       </a>
+                     ) : (
+                       <>
+                         <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
+                         <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
+                       </>
+                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="overflow-hidden rounded-2xl" ref={bannerRef}>
-                <div className="flex">
-                  {banners.map((b) => (
-                    <div key={b._id} className="flex-[0_0_100%] min-w-0 relative w-full">
-                      <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
-                      <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
-                    </div>
-                  ))}
+              <div className="relative group/carousel">
+                <div className="overflow-hidden rounded-2xl" ref={bannerRef}>
+                  <div className="flex">
+                    {banners.map((b) => (
+                      <div key={b._id} className="flex-[0_0_100%] min-w-0 relative w-full group">
+                        {b.link ? (
+                          <a href={b.link} className="block w-full h-full">
+                            <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block transition-transform duration-700 group-hover:scale-[1.02]" />
+                            <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden transition-transform duration-700 group-hover:scale-[1.02]" />
+                          </a>
+                        ) : (
+                          <>
+                            <img src={b.desktopImageUrl} alt="Promo" className="w-full h-auto hidden sm:block" />
+                            <img src={b.mobileImageUrl} alt="Promo" className="w-full h-auto sm:hidden" />
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                
+                {/* Carousel Navigation Arrows */}
+                <button onClick={scrollBannerPrev} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/80">
+                  <IconChevronLeft size={20} />
+                </button>
+                <button onClick={scrollBannerNext} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/80">
+                  <IconChevronRight size={20} />
+                </button>
               </div>
             )}
           </div>
@@ -296,10 +336,10 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="hidden md:flex gap-3">
-                <button onClick={scrollPrev} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                <button onClick={scrollTestiPrev} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                   <IconChevronLeft size={20} />
                 </button>
-                <button onClick={scrollNext} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                <button onClick={scrollTestiNext} className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                   <IconChevronRight size={20} />
                 </button>
               </div>
