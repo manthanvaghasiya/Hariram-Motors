@@ -60,7 +60,7 @@ export default function HomePage() {
       <HeroSection />
 
       {/* ════ SECTION 3: PREMIUM DEALERSHIP SERVICES ════ */}
-      <section className="pt-32 pb-20 bg-[#0a0a12] relative z-10 overflow-hidden">
+      <section className="pt-12 md:pt-32 pb-20 bg-[#0a0a12] relative z-10 overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(168,85,247,0.8)]"></div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-20 bg-purple-600/20 blur-[80px]"></div>
@@ -183,21 +183,56 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[
-                { icon: IconShieldCheck, title: 'Verified Cars', desc: 'Every car undergoes a 100-point inspection before listing.' },
-                { icon: IconCurrencyRupee, title: 'Transparent Pricing', desc: 'No hidden charges. Price you see is price you pay.' },
-                { icon: IconCertificate, title: 'Full Documentation', desc: 'RC transfer, insurance, NOC — we handle everything.' },
-                { icon: IconHeadset, title: 'After-Sale Support', desc: 'We\'re here even after the deal is done. 3 months support.' },
-              ].map((feat, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/40 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-purple-600/20 flex items-center justify-center mb-4 text-purple-400">
-                    <feat.icon size={24} />
-                  </div>
-                  <h3 className="text-white font-semibold mb-2">{feat.title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{feat.desc}</p>
-                </div>
-              ))}
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8 relative">
+              
+              {/* CARD 1 (01) - Top Left */}
+              <div className="bg-[#1a0e2e] border border-white/10 rounded-[2rem] p-8 relative shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] transition-shadow group">
+                {/* Outward Right Arrow */}
+                <div className="hidden sm:block absolute top-1/2 -right-[16px] w-8 h-8 bg-[#1a0e2e] rotate-45 transform -translate-y-1/2 z-10 border-t border-r border-white/10 rounded-[4px]"></div>
+                
+                <h3 className="font-['Outfit'] font-extrabold text-4xl text-white mb-3">01</h3>
+                <h4 className="font-['Outfit'] font-bold text-xl text-white mb-4">Verified Cars</h4>
+                <div className="w-12 border-b-2 border-dashed border-white/20 mb-5"></div>
+                <p className="text-sm text-gray-400 leading-relaxed font-['Inter']">Every car undergoes a 100-point inspection before listing.</p>
+              </div>
+
+              {/* CARD 2 (02) - Top Right */}
+              <div className="bg-[#1a0e2e] border border-white/10 rounded-[2rem] p-8 relative shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] transition-shadow group">
+                {/* Inward Left Cutout */}
+                <div className="hidden sm:block absolute top-1/2 -left-[17px] w-[34px] h-[34px] bg-[#0f0f1e] rotate-45 transform -translate-y-1/2 z-20 border-t border-r border-white/10 rounded-[4px]"></div>
+                {/* Outward Bottom Arrow */}
+                <div className="hidden sm:block absolute -bottom-[16px] left-1/2 w-8 h-8 bg-[#1a0e2e] rotate-45 transform -translate-x-1/2 z-10 border-r border-b border-white/10 rounded-[4px]"></div>
+
+                <h3 className="font-['Outfit'] font-extrabold text-4xl text-white mb-3">02</h3>
+                <h4 className="font-['Outfit'] font-bold text-xl text-white mb-4">Transparent Pricing</h4>
+                <div className="w-12 border-b-2 border-dashed border-white/20 mb-5"></div>
+                <p className="text-sm text-gray-400 leading-relaxed font-['Inter']">No hidden charges. Price you see is price you pay.</p>
+              </div>
+
+              {/* CARD 4 (04) - Bottom Left */}
+              <div className="bg-[#1a0e2e] border border-white/10 rounded-[2rem] p-8 relative shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] transition-shadow group order-4 sm:order-3">
+                {/* Inward Right Cutout */}
+                <div className="hidden sm:block absolute top-1/2 -right-[17px] w-[34px] h-[34px] bg-[#0f0f1e] rotate-45 transform -translate-y-1/2 z-20 border-b border-l border-white/10 rounded-[4px]"></div>
+
+                <h3 className="font-['Outfit'] font-extrabold text-4xl text-white mb-3">04</h3>
+                <h4 className="font-['Outfit'] font-bold text-xl text-white mb-4">After-Sale Support</h4>
+                <div className="w-12 border-b-2 border-dashed border-white/20 mb-5"></div>
+                <p className="text-sm text-gray-400 leading-relaxed font-['Inter']">We're here even after the deal is done. 3 months support.</p>
+              </div>
+
+              {/* CARD 3 (03) - Bottom Right */}
+              <div className="bg-[#1a0e2e] border border-white/10 rounded-[2rem] p-8 relative shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] transition-shadow group order-3 sm:order-4">
+                {/* Inward Top Cutout */}
+                <div className="hidden sm:block absolute -top-[17px] left-1/2 w-[34px] h-[34px] bg-[#0f0f1e] rotate-45 transform -translate-x-1/2 z-20 border-r border-b border-white/10 rounded-[4px]"></div>
+                {/* Outward Left Arrow */}
+                <div className="hidden sm:block absolute top-1/2 -left-[16px] w-8 h-8 bg-[#1a0e2e] rotate-45 transform -translate-y-1/2 z-10 border-b border-l border-white/10 rounded-[4px]"></div>
+
+                <h3 className="font-['Outfit'] font-extrabold text-4xl text-white mb-3">03</h3>
+                <h4 className="font-['Outfit'] font-bold text-xl text-white mb-4">Full Documentation</h4>
+                <div className="w-12 border-b-2 border-dashed border-white/20 mb-5"></div>
+                <p className="text-sm text-gray-400 leading-relaxed font-['Inter']">RC transfer, insurance, NOC — we handle everything.</p>
+              </div>
+
             </div>
 
           </div>

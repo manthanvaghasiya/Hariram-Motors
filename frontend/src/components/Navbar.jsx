@@ -46,7 +46,7 @@ export default function Navbar() {
           <Link className="hover:opacity-90 transition-opacity flex items-center group shrink-0" href="/">
             <div className="relative w-40 h-10 md:w-60 md:h-14 overflow-hidden flex items-center">
               <Image
-                src="/logo.jpeg"
+                src="/without_background_logo.png"
                 alt="Hariram Motors Logo"
                 fill
                 className="object-contain mix-blend-lighten"
@@ -65,8 +65,8 @@ export default function Navbar() {
                   key={link.path}
                   href={link.path}
                   className={`font-['Outfit'] text-[15px] h-full flex items-center transition-all duration-300 relative ${isActive
-                      ? "text-text-primary font-bold"
-                      : "text-text-secondary hover:text-text-primary"
+                    ? "text-text-primary font-bold"
+                    : "text-text-secondary hover:text-text-primary"
                     }`}
                 >
                   {link.name}

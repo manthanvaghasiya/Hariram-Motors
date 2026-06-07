@@ -115,10 +115,16 @@ export default function CarDetailPage() {
   const regularFeatures = [];
   let isLoanAvailable = car.loanAvailable;
 
+  const hasExplicitBadges = Array.isArray(car.badges) && car.badges.length > 0;
+  if (hasExplicitBadges) {
+    photoBadges.push(...car.badges.filter(b => specialBadgeNames.includes(b)));
+  }
+
   const allFeatures = [...(car.badges || []), ...(car.features || [])];
   allFeatures.forEach(feat => {
-    if (specialBadgeNames.some(b => feat.toLowerCase().includes(b.toLowerCase()))) {
-      if (!photoBadges.includes(feat)) photoBadges.push(feat);
+    const isSpecialBadge = specialBadgeNames.some(b => feat.toLowerCase().includes(b.toLowerCase()));
+    if (isSpecialBadge) {
+      if (!hasExplicitBadges && !photoBadges.includes(feat)) photoBadges.push(feat);
     } else if (feat.toLowerCase().includes('loan available')) {
       isLoanAvailable = true;
     } else {
@@ -127,7 +133,7 @@ export default function CarDetailPage() {
   });
 
   return (
-    <main className="flex-grow pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <main className="flex-grow pt-8 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-gray-400">
         <button onClick={() => router.back()} className="hover:text-purple-400 transition-colors flex items-center gap-1 group">

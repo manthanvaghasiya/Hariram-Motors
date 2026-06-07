@@ -123,7 +123,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative flex flex-col min-h-[65vh] md:min-h-[70vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#050508] z-20">
+    <section className="relative flex flex-col h-[480px] sm:h-[550px] md:h-auto md:min-h-[70vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#050508] z-20">
 
       {/* ════════════════════════════════════════════════════════════════
           DESKTOP BACKGROUND (Hidden on mobile)
@@ -145,21 +145,21 @@ export default function HeroSection() {
       ════════════════════════════════════════════════════════════════ */}
       <div className="md:hidden absolute inset-0 w-full h-full z-0 overflow-hidden bg-[#050508]">
         <motion.img
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1.05, opacity: 1 }}
+          initial={{ scale: 1.1, opacity: 0, y: -40 }}
+          animate={{ scale: 1.05, opacity: 1, y: -40 }}
           transition={{
             opacity: { duration: 1.8, ease: "easeOut" },
             scale: { duration: 30, repeat: Infinity, repeatType: "reverse", ease: "linear" }
           }}
           src="/images/hero_bg_mobile.png"
           alt="Premium Car"
-          className="absolute inset-0 w-full h-full object-cover object-[center_60%] z-0 origin-[center_60%]"
+          className="absolute inset-0 w-full h-full object-cover object-bottom z-0 origin-bottom"
         />
         {/* Deep cinematic vignette gradient */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/40 to-[#0a0a12]/80"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/30 to-[#0a0a12]/70"></div>
 
         {/* Mobile Content Overlay */}
-        <div className="absolute inset-x-0 top-[20%] z-10 px-6 flex flex-col items-start text-left">
+        <div className="absolute inset-x-0 top-[12%] z-10 px-6 flex flex-col items-start text-left">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="mt-4 text-white/80 text-sm font-medium tracking-wide max-w-[320px]"
+            className="mt-4 text-white/95 text-sm font-semibold tracking-wide max-w-[320px] drop-shadow-md"
           >
             Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
           </motion.p>
