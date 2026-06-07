@@ -104,10 +104,20 @@ router.get('/brands', async (_req, res) => {
   }
 });
 
-// ── GET /api/cars/:slug — Single car by slug ──
+// ── GET /api/cars/:slug — Single car by slug or ID ──
 router.get('/:slug', async (req, res) => {
   try {
-    const car = await Car.findOne({ slug: req.params.slug });
+    const { slug } = req.params;
+    let car;
+    
+    if (/^[0-9a-fA-F]{24}$/.test(slug)) {
+      car = await Car.findById(slug);
+    }
+    
+    if (!car) {
+      car = await Car.findOne({ slug });
+    }
+    
     if (!car) return res.status(404).json({ error: 'Car not found' });
     res.json(car);
   } catch (error) {

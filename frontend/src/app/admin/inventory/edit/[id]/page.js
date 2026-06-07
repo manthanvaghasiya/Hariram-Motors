@@ -109,24 +109,16 @@ function FormTextarea({ label, placeholder, register, error, rows = 4 }) {
 // Toggle Switch component
 function ToggleSwitch({ label, description, checked, onChange }) {
   return (
-    <label className="flex items-center justify-between p-4 bg-background rounded-xl cursor-pointer group hover:bg-background/80 transition-colors">
-      <div className="flex flex-col">
+    <label className="flex items-center justify-between p-4 bg-background border border-gray-100/10 rounded-xl cursor-pointer group hover:bg-white/5 transition-colors">
+      <div className="flex flex-col pr-4">
         <span className="font-body text-sm font-semibold text-text">{label}</span>
         {description && (
           <span className="font-body text-xs text-text-muted mt-0.5">{description}</span>
         )}
       </div>
-      <div
-        className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-          checked ? 'bg-accent' : 'bg-gray-300'
-        }`}
-        onClick={() => onChange(!checked)}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-            checked ? 'translate-x-5' : 'translate-x-0'
-          }`}
-        />
+      <div className="relative inline-flex items-center shrink-0">
+        <input type="checkbox" className="sr-only peer" checked={checked || false} onChange={(e) => onChange(e.target.checked)} />
+        <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
       </div>
     </label>
   );
