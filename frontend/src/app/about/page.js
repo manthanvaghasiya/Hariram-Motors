@@ -2,13 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Award, Users, Car, Clock, MapPin, Target, Eye } from 'lucide-react';
-import api from '@/lib/api';
+import { IconShieldCheck, IconReceipt, IconFileText, IconCar, IconCurrencyRupee, IconArrowsExchange, IconCheck } from '@tabler/icons-react';
 
 function AnimatedCounter({ value, suffix = '' }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   useEffect(() => {
     if (!isInView) return;
@@ -25,166 +24,388 @@ function AnimatedCounter({ value, suffix = '' }) {
     return () => clearInterval(timer);
   }, [isInView, value]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return <span>{count}<span className="text-purple-400">{suffix}</span></span>;
 }
 
 export default function AboutPage() {
-  const [settings, setSettings] = useState({});
-
-  useEffect(() => {
-    api.get('/site-settings').then(res => setSettings(res.data || {})).catch(() => {});
-  }, []);
-
-  const stats = [
-    { icon: Clock, value: settings.yearsInBusiness || 10, suffix: '+', label: 'Years in Business' },
-    { icon: Car, value: settings.carsSold || 500, suffix: '+', label: 'Cars Sold' },
-    { icon: Users, value: settings.happyCustomers || 450, suffix: '+', label: 'Happy Customers' },
-    { icon: Award, value: 100, suffix: '%', label: 'Customer Satisfaction' },
-  ];
-
   return (
-    <div className="pt-[72px] min-h-screen">
-      {/* Hero */}
-      <section className="relative py-20 bg-[var(--color-bg-surface)] overflow-hidden">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(226,176,74,0.1), transparent 60%)' }} />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl"
-          >
-            <span className="inline-block px-4 py-1.5 bg-[rgba(226,176,74,0.1)] border border-[rgba(226,176,74,0.2)] rounded-full text-[var(--color-primary)] text-sm font-medium mb-6">
+    <div className="bg-bg-primary min-h-screen pt-20 pb-0">
+
+      {/* HERO — STORY INTRO */}
+      <section className="relative w-full py-24 overflow-hidden">
+        {/* Subtle purple radial glow */}
+        <div className="absolute top-1/2 -translate-y-1/2 -left-48 w-96 h-96 bg-purple-600/[0.08] rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <div className="max-w-2xl">
+            <div className="text-purple-400 text-[11px] uppercase tracking-[0.15em] mb-4 font-bold">
               About Us
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>
-              Driving <span className="gradient-text">Trust</span> Since Day One
-            </h1>
-            <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed">
-              {settings.aboutText || 'Hariram Motors has been serving customers in Surat with the best selection of pre-owned cars. We believe in transparency, quality, and customer satisfaction.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-16 border-b border-[var(--color-border)]">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mx-auto mb-4">
-                  <stat.icon size={24} className="text-[#0f0f1a]" />
-                </div>
-                <p className="text-3xl md:text-4xl font-bold gradient-text mb-1">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                </p>
-                <p className="text-sm text-[var(--color-text-secondary)]">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mission & Vision */}
-      <section className="section">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="glass-card p-8"
-            >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mb-5">
-                <Target size={22} className="text-[#0f0f1a]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'var(--font-outfit)' }}>Our Mission</h3>
-              <p className="text-[var(--color-text-secondary)] leading-relaxed">
-                {settings.missionText || 'To provide the finest quality pre-owned vehicles at the most competitive prices, with complete transparency and exceptional after-sales service.'}
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="glass-card p-8"
-            >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mb-5">
-                <Eye size={22} className="text-[#0f0f1a]" />
-              </div>
-              <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'var(--font-outfit)' }}>Our Vision</h3>
-              <p className="text-[var(--color-text-secondary)] leading-relaxed">
-                To be Surat&apos;s most trusted and preferred destination for pre-owned cars, setting new standards in the industry through integrity and excellence.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team / Owner */}
-      <section className="section bg-[var(--color-bg-surface)]">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="section-title" style={{ fontFamily: 'var(--font-outfit)' }}>
-              Meet the <span className="gradient-text">Team</span>
-            </h2>
-            <p className="section-subtitle mx-auto">The people behind Hariram Motors</p>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="glass-card p-8 max-w-2xl mx-auto text-center"
-          >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mx-auto mb-5 text-3xl font-bold text-[#0f0f1a]">
-              HM
             </div>
-            <h3 className="text-xl font-bold mb-1">Hariram Motors</h3>
-            <p className="text-[var(--color-primary)] text-sm mb-4">Founder & Owner</p>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed max-w-lg mx-auto">
-              With over a decade of experience in the automobile industry, our founder started Hariram Motors with a simple vision — to make buying a pre-owned car as trustworthy and transparent as buying a new one.
+            <h1 className="font-['Outfit'] font-bold text-[56px] text-text-primary leading-[1.1] mb-6">
+              Surat&apos;s Most<br />
+              <span className="bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">Trusted Name</span>
+            </h1>
+            <p className="font-['Inter'] text-[18px] text-text-secondary leading-8 max-w-xl">
+              Since 2013, Hariram Motors has been helping Surat families find their perfect car. Not with pressure. Not with gimmicks. Just honest deals, genuine cars, and people who care.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Google Maps */}
-      <section className="section">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="section-title" style={{ fontFamily: 'var(--font-outfit)' }}>
-              <MapPin className="inline mr-2 text-[var(--color-primary)]" size={28} />
-              Find <span className="gradient-text">Us</span>
-            </h2>
-            <p className="section-subtitle mx-auto">{settings.address || 'Ring Road, Surat, Gujarat 395002'}</p>
-          </div>
-          <div className="glass-card overflow-hidden">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238132.5888489734!2d72.7132!3d21.1702!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04e59411d1563%3A0xfe4558290938b042!2sSurat%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="rounded-lg"
-            />
+      {/* STATS ROW */}
+      <section className="w-full py-16 bg-bg-secondary border-y border-border-main">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 md:gap-y-0 text-center divide-x-0 md:divide-x divide-white/[0.08]">
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-['Outfit'] text-[52px] font-bold text-text-primary leading-none mb-2">
+                <AnimatedCounter value={500} suffix="+" />
+              </span>
+              <span className="font-['Inter'] text-[14px] text-text-muted uppercase tracking-wider font-medium">Happy Customers</span>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-['Outfit'] text-[52px] font-bold text-text-primary leading-none mb-2">
+                <AnimatedCounter value={150} suffix="+" />
+              </span>
+              <span className="font-['Inter'] text-[14px] text-text-muted uppercase tracking-wider font-medium">Cars in Stock</span>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-['Outfit'] text-[52px] font-bold text-text-primary leading-none mb-2">
+                <AnimatedCounter value={10} suffix="+" />
+              </span>
+              <span className="font-['Inter'] text-[14px] text-text-muted uppercase tracking-wider font-medium">Years of Trust</span>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-['Outfit'] text-[52px] font-bold text-text-primary leading-none mb-2">
+                <AnimatedCounter value={100} suffix="%" />
+              </span>
+              <span className="font-['Inter'] text-[14px] text-text-muted uppercase tracking-wider font-medium">Transparent Pricing</span>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* OUR STORY — 2 COLUMN */}
+      <section className="py-20 w-full">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-12">
+
+            {/* Left (48%) */}
+            <div className="lg:w-[48%] flex flex-col justify-center">
+              <div className="text-purple-400 text-[11px] uppercase tracking-[0.15em] mb-4 font-bold">
+                Our Story
+              </div>
+              <h2 className="font-['Outfit'] font-bold text-[38px] text-text-primary leading-[1.2] mb-8">
+                A Decade of<br />Honest Deals
+              </h2>
+
+              <div className="space-y-6 mb-12">
+                <p className="font-['Inter'] text-[16px] text-text-secondary leading-8">
+                  What started in 2013 as a small lot with big dreams has evolved into Surat&apos;s most trusted pre-owned car dealership. Our foundation was simple: treat every customer like family.
+                </p>
+                <p className="font-['Inter'] text-[16px] text-text-secondary leading-8">
+                  Through sheer trust and word of mouth, we&apos;ve grown exponentially. We&apos;ve proudly served over 500 families, ensuring each one drives away with a smile and total peace of mind.
+                </p>
+                <p className="font-['Inter'] text-[16px] text-text-secondary leading-8">
+                  Today, with a constantly refreshed inventory of over 150 meticulously inspected cars, full documentation support, and a commitment to transparency, we are Surat&apos;s go-to automotive destination.
+                </p>
+              </div>
+
+
+            </div>
+
+            {/* Right (52%) */}
+            <div className="lg:w-[52%]">
+              <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white/5 mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2000&auto=format&fit=crop"
+                  alt="Hariram Motors Showroom"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <div className="inline-flex items-center gap-2 border border-border-main rounded-lg px-4 py-2 text-[14px] text-text-secondary">
+                  <span className="text-purple-400 font-bold">✓</span> 100-Point Inspection
+                </div>
+                <div className="inline-flex items-center gap-2 border border-border-main rounded-lg px-4 py-2 text-[14px] text-text-secondary">
+                  <span className="text-purple-400 font-bold">✓</span> RC Transfer Support
+                </div>
+              </div>
+
+              {/* Horizontal Timeline */}
+              <div className="flex flex-col sm:flex-row flex-wrap sm:items-center gap-6 sm:gap-10 mt-8 pt-6 border-t border-purple-600/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
+                  <div>
+                    <span className="font-bold text-text-primary mr-2">2013</span>
+                    <span className="text-text-secondary">Founded</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
+                  <div>
+                    <span className="font-bold text-text-primary mr-2">2018</span>
+                    <span className="text-text-secondary">500 Cars Sold</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
+                  <div>
+                    <span className="font-bold text-text-primary mr-2">2024</span>
+                    <span className="text-text-secondary">#1 in Surat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* MISSION & VISION — 2 CARDS */}
+      <section className="py-20 bg-bg-secondary">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <div className="text-purple-400 text-[11px] uppercase tracking-[0.15em] mb-4 font-bold">
+              What Drives Us
+            </div>
+            <h2 className="font-['Outfit'] font-bold text-[38px] text-text-primary">
+              Built on Two Promises
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-bg-tertiary rounded-2xl p-8 border border-border-main">
+              <div className="text-purple-400 text-sm uppercase tracking-wider mb-3 font-bold">
+                Mission
+              </div>
+              <h3 className="font-['Outfit'] font-bold text-[22px] text-text-primary mb-4">
+                Give every customer the best deal
+              </h3>
+              <p className="font-['Inter'] text-[15px] text-text-secondary leading-7">
+                We are dedicated to providing the finest quality pre-owned vehicles at the most competitive prices in the market. We ensure complete transparency and zero hidden costs so that our customers always win.
+              </p>
+            </div>
+
+            <div className="bg-bg-tertiary rounded-2xl p-8 border border-border-main">
+              <div className="text-purple-400 text-sm uppercase tracking-wider mb-3 font-bold">
+                Vision
+              </div>
+              <h3 className="font-['Outfit'] font-bold text-[22px] text-text-primary mb-4">
+                Be Gujarat&apos;s most trusted car brand
+              </h3>
+              <p className="font-['Inter'] text-[15px] text-text-secondary leading-7">
+                To expand our footprint across Gujarat while maintaining the intimacy and trust of a family business. We aim to set the gold standard in the pre-owned automobile industry through uncompromised integrity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES SECTION (Glowing SaaS Style) */}
+      <section className="py-24 w-full bg-bg-primary relative overflow-hidden">
+        {/* Top title glow like the image */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50 shadow-[0_0_20px_rgba(59,130,246,0.8)]"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-20 bg-blue-600/20 blur-[80px]"></div>
+
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="font-['Outfit'] font-bold text-[32px] md:text-[42px] text-text-primary tracking-wide">
+              Every Automotive Service in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">One Place</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            {/* CARD 1: BUY */}
+            <div className="bg-bg-secondary rounded-2xl p-8 border border-blue-500/20 flex flex-col group hover:border-blue-400/60 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] transition-all duration-500">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-9 h-9 rounded-full border-2 border-blue-400 text-blue-400 flex items-center justify-center font-['Outfit'] font-bold text-lg flex-shrink-0 group-hover:shadow-[0_0_15px_rgba(96,165,250,0.6)] transition-all">
+                  1
+                </div>
+                <h3 className="font-['Outfit'] font-bold text-[22px] text-text-primary leading-tight mt-1">
+                  Buy Premium <br /> Pre-owned Cars
+                </h3>
+              </div>
+
+              <p className="font-['Inter'] text-[14px] text-text-muted leading-relaxed mb-4">
+                Drive home a pristine vehicle. Every car undergoes a strict 100-point inspection, ensuring total peace of mind and non-accidental guarantees. We offer the best competitive prices in Surat.
+              </p>
+
+              <ul className="space-y-2 mb-8 flex-grow">
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> 100-Point Quality Inspection
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Non-Accidental Guarantee
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Easy & Fast Financing
+                </li>
+              </ul>
+
+              {/* Graphic 1: List with glowing cursor */}
+              <div className="h-40 w-full mt-auto relative rounded-xl border border-border-subtle bg-bg-primary p-4 flex flex-col justify-end overflow-hidden group-hover:border-blue-500/20 transition-colors">
+                <div className="w-full h-4 bg-white/5 rounded mb-3 flex items-center px-2 gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div>
+                  <div className="w-16 h-1.5 bg-white/10 rounded"></div>
+                </div>
+                <div className="w-full h-4 bg-white/5 rounded mb-3 flex items-center px-2 gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div>
+                  <div className="w-24 h-1.5 bg-white/10 rounded"></div>
+                </div>
+                <div className="w-full flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div>
+                  <div className="flex-grow h-8 bg-gradient-to-r from-blue-600 to-cyan-500 rounded relative shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                    {/* Fake Cursor */}
+                    <svg className="absolute -bottom-4 -right-2 w-8 h-8 text-text-primary drop-shadow-[0_0_5px_rgba(255,255,255,0.8)] z-10" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2 1-3.2-7.4-4.4 4.8z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 2: SELL */}
+            <div className="bg-bg-secondary rounded-2xl p-8 border border-blue-500/20 flex flex-col group hover:border-blue-400/60 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] transition-all duration-500">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-9 h-9 rounded-full border-2 border-blue-400 text-blue-400 flex items-center justify-center font-['Outfit'] font-bold text-lg flex-shrink-0 group-hover:shadow-[0_0_15px_rgba(96,165,250,0.6)] transition-all">
+                  2
+                </div>
+                <h3 className="font-['Outfit'] font-bold text-[22px] text-text-primary leading-tight mt-1">
+                  Sell Your Car <br /> Instantly
+                </h3>
+              </div>
+
+              <p className="font-['Inter'] text-[14px] text-text-muted leading-relaxed mb-4">
+                Get the best market value in 24 hours. Enjoy free doorstep evaluation and 100% free RC transfer without the traditional dealership hassle.
+              </p>
+
+              <ul className="space-y-2 mb-8 flex-grow">
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Instant Payment in 24 Hrs
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Free Doorstep Evaluation
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> 100% Free RC Transfer
+                </li>
+              </ul>
+
+              {/* Graphic 2: Forms and Tooltip */}
+              <div className="h-40 w-full mt-auto relative rounded-xl border border-border-subtle bg-bg-primary p-4 flex flex-col justify-end gap-3 overflow-hidden group-hover:border-blue-500/20 transition-colors">
+                <div className="w-3/4 h-6 border border-blue-500/40 rounded flex items-center px-2 relative">
+                  <div className="w-12 h-1.5 bg-blue-500/40 rounded"></div>
+                  {/* Tooltip */}
+                  <div className="absolute -top-6 right-0 w-6 h-6 border border-cyan-400 rounded-md flex items-center justify-center text-cyan-400 text-[10px] font-bold shadow-[0_0_10px_rgba(34,211,238,0.5)] bg-bg-secondary">
+                    ?
+                  </div>
+                </div>
+                <div className="w-full h-8 border border-blue-400 rounded flex items-center px-2 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                  <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]"></div>
+                  <div className="w-32 h-1.5 bg-blue-400/30 rounded ml-2"></div>
+                </div>
+                <div className="w-2/3 h-6 border border-blue-500/40 rounded flex items-center px-2 relative">
+                  <div className="w-8 h-1.5 bg-blue-500/40 rounded"></div>
+                  <svg className="absolute -bottom-3 -right-3 w-6 h-6 text-cyan-300 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)] z-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2 1-3.2-7.4-4.4 4.8z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD 3: EXCHANGE */}
+            <div className="bg-bg-secondary rounded-2xl p-8 border border-blue-500/20 flex flex-col group hover:border-blue-400/60 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] transition-all duration-500">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-9 h-9 rounded-full border-2 border-blue-400 text-blue-400 flex items-center justify-center font-['Outfit'] font-bold text-lg flex-shrink-0 group-hover:shadow-[0_0_15px_rgba(96,165,250,0.6)] transition-all">
+                  3
+                </div>
+                <h3 className="font-['Outfit'] font-bold text-[22px] text-text-primary leading-tight mt-1">
+                  Seamless Vehicle <br /> Exchange
+                </h3>
+              </div>
+
+              <p className="font-['Inter'] text-[14px] text-text-muted leading-relaxed mb-4">
+                Upgrade your lifestyle seamlessly by trading in your old vehicle for a new premium ride. We provide the most lucrative exchange offers in the market.
+              </p>
+
+              <ul className="space-y-2 mb-8 flex-grow">
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Highest Market Value
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Seamless Vehicle Upgrades
+                </li>
+                <li className="flex items-center gap-2 text-[13px] text-blue-100/70">
+                  <span className="text-blue-400 font-bold">✓</span> Zero Paperwork Hassle
+                </li>
+              </ul>
+
+              {/* Graphic 3: Dashboard Speedometer and Button */}
+              <div className="h-40 w-full mt-auto relative rounded-xl border border-border-subtle bg-bg-primary p-4 flex flex-col justify-end overflow-hidden group-hover:border-blue-500/20 transition-colors">
+                <div className="w-1/2 h-1.5 bg-white/10 rounded mb-2"></div>
+                <div className="w-3/4 h-1.5 bg-white/10 rounded mb-4"></div>
+
+                {/* Fake Speedometer */}
+                <div className="absolute bottom-10 right-4 w-16 h-16 border-[3px] border-cyan-400 rounded-full border-b-transparent border-l-transparent -rotate-45 shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                  <div className="absolute top-1/2 left-1/2 w-1 h-6 bg-white origin-bottom -translate-x-1/2 -translate-y-full rotate-[60deg] rounded-full drop-shadow-[0_0_3px_#fff]"></div>
+                </div>
+
+                <a href="/catalog" className="inline-flex items-center gap-2 mt-auto w-max px-4 py-1.5 bg-gradient-to-r from-blue-700 to-blue-500 text-white text-[12px] font-bold rounded shadow-[0_0_15px_rgba(59,130,246,0.6)] relative z-10">
+                  Explore Options &rarr;
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* WHY TRUST US — 3 ITEMS */}
+      <section className="py-20 bg-bg-secondary">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="text-purple-400 text-[11px] uppercase tracking-[0.15em] mb-4 font-bold">
+              Our Promise
+            </div>
+            <h2 className="font-['Outfit'] font-bold text-[38px] text-text-primary">
+              Why Customers Return
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
+            <div className="flex flex-col items-center text-center py-4">
+              <div className="w-[48px] h-[48px] rounded-full bg-purple-600/[0.15] text-purple-400 flex items-center justify-center mb-4">
+                <IconShieldCheck size={24} />
+              </div>
+              <h3 className="font-['Outfit'] font-bold text-[17px] text-text-primary mb-2">Verified Stock</h3>
+              <p className="font-['Inter'] text-[14px] text-text-secondary max-w-xs leading-6">
+                Every car is rigorously inspected on mechanical and cosmetic parameters before listing.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center py-4">
+              <div className="w-[48px] h-[48px] rounded-full bg-purple-600/[0.15] text-purple-400 flex items-center justify-center mb-4">
+                <IconReceipt size={24} />
+              </div>
+              <h3 className="font-['Outfit'] font-bold text-[17px] text-text-primary mb-2">Honest Pricing</h3>
+              <p className="font-['Inter'] text-[14px] text-text-secondary max-w-xs leading-6">
+                No hidden charges, no surprises. What you see is what you pay.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center py-4">
+              <div className="w-[48px] h-[48px] rounded-full bg-purple-600/[0.15] text-purple-400 flex items-center justify-center mb-4">
+                <IconFileText size={24} />
+              </div>
+              <h3 className="font-['Outfit'] font-bold text-[17px] text-text-primary mb-2">Full Paperwork</h3>
+              <p className="font-['Inter'] text-[14px] text-text-secondary max-w-xs leading-6">
+                We handle the RC transfer, NOC, and insurance so you can focus on driving.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
     </div>
   );
 }

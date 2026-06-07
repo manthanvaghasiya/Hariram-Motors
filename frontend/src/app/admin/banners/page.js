@@ -83,8 +83,8 @@ export default function AdminBannersPage() {
         ) : banners.length > 0 ? (
           banners.map((b) => (
             <div key={b._id} className="glass-card overflow-hidden hover:!transform-none">
-              <div className="relative aspect-[3/1]">
-                <Image src={b.desktopImageUrl} alt={b.title || 'Banner'} fill className="object-cover" />
+              <div className="relative w-full">
+                <img src={b.desktopImageUrl} alt={b.title || 'Banner'} className="w-full h-auto" />
               </div>
               <div className="p-4 flex items-center justify-between">
                 <div>

@@ -4,6 +4,7 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 import { upload, uploadToCloudinary, deleteFromCloudinary } from '../config/cloudinary.js';
 
 const router = express.Router();
+// Trigger nodemon restart
 
 // ── GET /api/cars — Public listing with filters ──
 router.get('/', async (req, res) => {
@@ -69,16 +70,22 @@ router.get('/', async (req, res) => {
 // ── GET /api/cars/filters — Get makes and brand-model map ──
 router.get('/filters', async (_req, res) => {
   try {
-    const makes = await Car.distinct('make');
+    const activeFilter = { status: { $ne: 'sold' } };
+    const makes = await Car.distinct('make', activeFilter);
+    const fuelTypes = await Car.distinct('fuelType', activeFilter);
+    const bodyTypes = await Car.distinct('bodyType', activeFilter);
     
     // Aggregate to get unique models per make
     const brandModelMap = await Car.aggregate([
+      { $match: activeFilter },
       { $group: { _id: '$make', models: { $addToSet: '$model' } } }
     ]);
     
     res.json({
       data: {
-        makes: makes.sort(),
+        makes: makes.filter(Boolean).sort(),
+        fuelTypes: fuelTypes.filter(Boolean).sort(),
+        bodyTypes: bodyTypes.filter(Boolean).sort(),
         brandModelMap
       }
     });

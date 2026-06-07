@@ -1,9 +1,6 @@
 import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import WhatsAppButton from '@/components/WhatsAppButton';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import AppLayoutWrapper from '@/components/AppLayoutWrapper';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({
@@ -46,29 +43,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${outfit.variable} dark`} suppressHydrationWarning>
+      <head>
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link crossOrigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect" />
+        <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      </head>
       <body className="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <link href="https://fonts.googleapis.com" rel="preconnect"/>
-          <link crossOrigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-          <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
-          <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: 'var(--color-bg-card)',
-                color: 'var(--color-text-primary)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '12px',
-              },
-            }}
-          />
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-          <WhatsAppButton />
-        </ThemeProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: 'var(--color-surface)',
+              color: 'var(--color-on-surface)',
+              border: '1px solid var(--color-outline)',
+              borderRadius: '12px',
+            },
+          }}
+        />
+        <AppLayoutWrapper>{children}</AppLayoutWrapper>
       </body>
     </html>
   );

@@ -20,6 +20,8 @@ const carSchema = new mongoose.Schema(
       min: [1990, 'Year must be 1990 or later'],
       max: [new Date().getFullYear() + 1, 'Year cannot be in the future'],
     },
+    manufacturingYear: { type: Number },
+    registerYear: { type: Number },
     price: {
       type: Number,
       min: [0, 'Price must be positive'],
@@ -28,6 +30,7 @@ const carSchema = new mongoose.Schema(
       type: Number,
       min: [0, 'KMs must be positive'],
     },
+    isKmGenuine: { type: Boolean, default: false },
     condition: {
       type: String,
       enum: ['used', 'new'],
@@ -40,6 +43,7 @@ const carSchema = new mongoose.Schema(
       type: Number,
     },
     variants: [{ type: String }],
+    variant: { type: String, trim: true },
 
     // ── Specs ──
     fuelType: {
@@ -60,6 +64,7 @@ const carSchema = new mongoose.Schema(
       min: [1, 'Owners must be at least 1'],
       default: 1,
     },
+    ownership: { type: String, trim: true },
     seats: { type: Number },
     engineCC: { type: Number },
     insurance: {
@@ -67,6 +72,7 @@ const carSchema = new mongoose.Schema(
       enum: ['Comprehensive', 'Third Party', 'Expired', 'Zero Dep'],
     },
     registrationState: { type: String, trim: true },
+    registration: { type: String, trim: true },
 
     // ── Media ──
     images: [
@@ -75,14 +81,26 @@ const carSchema = new mongoose.Schema(
         publicId: { type: String },
       },
     ],
+    spinImages: [{ type: String }],
+    mainPhotoIndex: { type: Number, default: 0 },
 
     // ── Additional ──
     description: { type: String, trim: true },
     features: [{ type: String }],
+    airConditioner: { type: String, trim: true },
+    powerWindows: { type: String, trim: true },
+    sunroof: { type: String, trim: true },
+    parkingSensors: { type: String, trim: true },
+    displacement: { type: String, trim: true },
+    maxPower: { type: String, trim: true },
+    driveType: { type: String, trim: true },
+    cylinders: { type: Number },
+    badges: [{ type: String }],
+    loanAvailable: { type: Boolean, default: false },
     isFeatured: { type: Boolean, default: false },
     status: {
       type: String,
-      enum: ['available', 'sold', 'reserved', 'upcoming'],
+      enum: ['available', 'sold', 'reserved', 'upcoming', 'Draft', 'Coming Soon', 'Available'],
       default: 'available',
     },
   },
@@ -94,7 +112,7 @@ const carSchema = new mongoose.Schema(
 // Auto-generate title and slug before saving
 carSchema.pre('save', function (next) {
   if (this.isModified('make') || this.isModified('model') || this.isModified('year')) {
-    this.title = `${this.year} ${this.make} ${this.model}`;
+    this.title = `${this.make} ${this.model}${this.year ? ` (${this.year})` : ''}`.trim();
     const base = `${this.year}-${this.make}-${this.model}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     this.slug = `${base}-${this._id.toString().slice(-6)}`;
   }

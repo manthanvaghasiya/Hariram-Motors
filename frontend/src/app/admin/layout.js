@@ -126,15 +126,11 @@ export default function AdminLayout({ children }) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top Bar */}
-        <header className="h-16 bg-[var(--color-bg-card)] border-b border-[var(--color-border)] flex items-center px-4 lg:px-6">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+        {/* Mobile Top Bar (Hidden on Desktop) */}
+        <header className="lg:hidden h-16 bg-[var(--color-bg-card)] border-b border-[var(--color-border)] flex items-center px-4">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
             <Menu size={22} />
           </button>
-          <div className="flex-1" />
-          <Link href="/" target="_blank" className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors">
-            View Website <ChevronRight size={14} />
-          </Link>
         </header>
 
         {/* Content */}

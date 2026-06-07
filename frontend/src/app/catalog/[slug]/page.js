@@ -1,265 +1,378 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Fuel, Calendar, Gauge, Users, Palette, Cog, Shield, MapPin, MessageCircle, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { 
+  IconArrowLeft, IconMaximize, IconCalendarMonth, IconDashboard, 
+  IconGasStation, IconManualGearbox, IconUser, IconMapPin, 
+  IconShieldCheck, IconBrandWhatsapp, IconPhoneCall, IconInfoCircle,
+  IconArrowRight
+} from '@tabler/icons-react';
 import api from '@/lib/api';
 import { formatPrice, formatKms, getOptimizedImage, getCarInquiryLink } from '@/lib/utils';
 import CarCard from '@/components/CarCard';
 
 export default function CarDetailPage() {
   const { slug } = useParams();
+  const router = useRouter();
+  
   const [car, setCar] = useState(null);
-  const [related, setRelated] = useState([]);
+  const [similarCars, setSimilarCars] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
-  const [lightbox, setLightbox] = useState(false);
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  // Smart Sticky State
+  const rightColumnRef = useRef(null);
+  const [stickyTop, setStickyTop] = useState('120px');
 
   useEffect(() => {
-    const fetchCar = async () => {
+    const handleResize = () => {
+      if (!rightColumnRef.current) return;
+      const elementHeight = rightColumnRef.current.offsetHeight;
+      const windowHeight = window.innerHeight;
+      
+      if (elementHeight > windowHeight - 144) {
+        // Taller than screen -> Stick to the bottom (negative top)
+        const top = windowHeight - elementHeight - 24;
+        setStickyTop(`${top}px`);
+      } else {
+        // Shorter than screen -> Stick to top
+        setStickyTop('120px');
+      }
+    };
+
+    // Delay slighty to ensure fonts/images are rendered
+    setTimeout(handleResize, 100);
+    window.addEventListener('resize', handleResize);
+    
+    let observer;
+    if (window.ResizeObserver && rightColumnRef.current) {
+      observer = new ResizeObserver(handleResize);
+      observer.observe(rightColumnRef.current);
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (observer) observer.disconnect();
+    };
+  }, [car]);
+
+  useEffect(() => {
+    const fetchCarAndSimilar = async () => {
       try {
         const res = await api.get(`/cars/${slug}`);
-        setCar(res.data);
-        // Fetch related cars by same make
-        if (res.data.make) {
-          const relRes = await api.get(`/cars?make=${res.data.make}&limit=3`);
-          setRelated((relRes.data.cars || []).filter(c => c._id !== res.data._id).slice(0, 3));
+        const fetchedCar = res.data;
+        setCar(fetchedCar);
+        
+        // Fetch similar cars
+        const similarRes = await api.get(`/cars?make=${fetchedCar.make}&status=available&limit=4`);
+        if (similarRes.data?.cars) {
+          // Filter out the current car and limit to 3
+          setSimilarCars(similarRes.data.cars.filter(c => c._id !== fetchedCar._id).slice(0, 3));
         }
-      } catch (err) {
-        console.log('Car not found');
+      } catch (error) {
+        console.error('Failed to fetch car details:', error);
       } finally {
         setLoading(false);
       }
     };
-    if (slug) fetchCar();
+    if (slug) fetchCarAndSimilar();
   }, [slug]);
 
   if (loading) {
     return (
-      <div className="pt-[72px] min-h-screen">
-        <div className="container mx-auto px-4 lg:px-8 py-8">
-          <div className="skeleton h-8 w-48 rounded mb-8" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="skeleton aspect-[4/3] rounded-2xl" />
-            <div className="space-y-4">
-              <div className="skeleton h-10 w-3/4 rounded" />
-              <div className="skeleton h-6 w-1/2 rounded" />
-              <div className="skeleton h-40 rounded-2xl" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <main className="flex-grow pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex justify-center items-center">
+        <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+      </main>
     );
   }
 
   if (!car) {
     return (
-      <div className="pt-[72px] min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Car Not Found</h2>
-          <Link href="/catalog" className="btn-primary">Browse All Cars</Link>
-        </div>
-      </div>
+      <main className="flex-grow pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full text-center">
+        <h1 className="text-3xl font-bold text-white mb-4">Car Not Found</h1>
+        <p className="text-gray-400 mb-8">The vehicle you are looking for may have been sold or removed.</p>
+        <Link href="/catalog" className="px-6 py-3 bg-purple-600 text-white rounded-full font-bold">
+          Back to Catalog
+        </Link>
+      </main>
     );
   }
 
-  const specs = [
-    { icon: Calendar, label: 'Year', value: car.year },
-    { icon: Fuel, label: 'Fuel', value: car.fuelType },
-    { icon: Gauge, label: 'KM Driven', value: formatKms(car.kms) },
-    { icon: Cog, label: 'Transmission', value: car.transmission },
-    { icon: Users, label: 'Owners', value: car.owners ? `${car.owners}${car.owners === 1 ? 'st' : car.owners === 2 ? 'nd' : 'rd'} Owner` : null },
-    { icon: Palette, label: 'Color', value: car.color },
-    { icon: Shield, label: 'Insurance', value: car.insurance },
-    { icon: MapPin, label: 'Registration', value: car.registrationState },
-  ].filter(s => s.value);
+  const title = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ''}`.trim();
+  const images = car.images || [];
 
-  const whatsappLink = getCarInquiryLink(car, process.env.NEXT_PUBLIC_WHATSAPP || '+919876543210');
+  const hasBadges = car.badges && car.badges.length > 0;
+  const isSold = car.status === 'sold';
+
+  // Extract special badges from features/badges to show on photo and EMI section
+  const specialBadgeNames = ['Certified', 'Peti-pack', 'Valid Vimo'];
+  const photoBadges = [];
+  const regularFeatures = [];
+  let isLoanAvailable = car.loanAvailable;
+
+  const allFeatures = [...(car.badges || []), ...(car.features || [])];
+  allFeatures.forEach(feat => {
+    if (specialBadgeNames.some(b => feat.toLowerCase().includes(b.toLowerCase()))) {
+      if (!photoBadges.includes(feat)) photoBadges.push(feat);
+    } else if (feat.toLowerCase().includes('loan available')) {
+      isLoanAvailable = true;
+    } else {
+      if (!regularFeatures.includes(feat)) regularFeatures.push(feat);
+    }
+  });
 
   return (
-    <div className="pt-[72px] min-h-screen">
-      <div className="container mx-auto px-4 lg:px-8 py-8">
-        {/* Back */}
-        <Link href="/catalog" className="inline-flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] mb-6 transition-colors">
-          <ArrowLeft size={18} /> Back to Catalog
-        </Link>
+    <main className="flex-grow pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-gray-400">
+        <button onClick={() => router.back()} className="hover:text-purple-400 transition-colors flex items-center gap-1 group">
+          <IconArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          Back to Catalog
+        </button>
+      </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* 2 Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* ════ LEFT COLUMN: Gallery & Description ════ */}
+        <div className="lg:col-span-7 flex flex-col gap-8">
+          
           {/* Image Gallery */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="flex flex-col gap-4">
             {/* Main Image */}
-            <div
-              className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[var(--color-bg-surface)] cursor-pointer"
-              onClick={() => setLightbox(true)}
-            >
-              {car.images?.length > 0 ? (
-                <Image
-                  src={getOptimizedImage(car.images[activeImage]?.url, 1200)}
-                  alt={car.title}
-                  fill
-                  className="object-cover"
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#12121f] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] group">
+              {images.length > 0 ? (
+                <Image 
+                  src={getOptimizedImage(images[activeImageIdx]?.url, 1200)} 
+                  alt={title} 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-700" 
                   priority
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
-                  No Image Available
-                </div>
+                <div className="w-full h-full flex items-center justify-center text-gray-600 bg-white/5">No Image Available</div>
               )}
-              {car.status === 'sold' && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-red-400 border-4 border-red-400 px-6 py-2 rounded-xl rotate-[-15deg]">SOLD</span>
+              
+              {/* Photo Badges */}
+              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+                {photoBadges.map((badge, i) => (
+                  <span key={i} className="bg-purple-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-purple-500/30">
+                    {badge}
+                  </span>
+                ))}
+              </div>
+
+              {isSold && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] pointer-events-none z-10">
+                  <div className="border-4 border-red-500 text-red-500 font-bold text-5xl md:text-7xl tracking-widest px-8 py-2 rounded-lg bg-[#0a0a12]/60 backdrop-blur-md shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+                    SOLD
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Thumbnails */}
-            {car.images?.length > 1 && (
-              <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
-                {car.images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImage(i)}
-                    className={`relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
-                      i === activeImage ? 'border-[var(--color-primary)]' : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
+            {/* Thumbnail Strip */}
+            {images.length > 1 && (
+              <div className="flex gap-4 overflow-x-auto custom-scrollbar pb-2 snap-x">
+                {images.map((img, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => setActiveImageIdx(idx)}
+                    className={`shrink-0 w-32 aspect-video rounded-xl overflow-hidden border-2 transition-all duration-300 snap-start relative ${activeImageIdx === idx ? 'border-purple-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
                   >
-                    <Image
-                      src={getOptimizedImage(img.url, 200)}
-                      alt={`${car.title} - ${i + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={getOptimizedImage(img.url, 300)} alt={`${title} ${idx+1}`} fill className="object-cover" />
                   </button>
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
 
-          {/* Details */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <h1 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
-                {car.title || `${car.year} ${car.make} ${car.model}`}
-              </h1>
+          {/* Description Section */}
+          <div className="bg-white/5 backdrop-blur-[20px] border border-white/10 rounded-2xl p-6 md:p-8 mt-4">
+            <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>About this Car</h2>
+            <div className="text-gray-300 mb-8 leading-relaxed whitespace-pre-wrap">
+              {car.description || `Experience the pinnacle of automotive engineering with this meticulously maintained ${title}. This vehicle blends everyday usability with unparalleled performance.`}
             </div>
 
-            {car.status !== 'sold' && (
-              <span className="badge badge-available mb-4">Available</span>
-            )}
-
-            {/* Price */}
-            <div className="mt-4 mb-6">
-              <p className="text-3xl md:text-4xl font-bold gradient-text">{formatPrice(car.price)}</p>
-            </div>
-
-            {/* Specs Grid */}
-            <div className="glass-card p-5 mb-6">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-4">Specifications</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {specs.map((spec) => (
-                  <div key={spec.label} className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[rgba(226,176,74,0.1)] flex items-center justify-center flex-shrink-0">
-                      <spec.icon size={16} className="text-[var(--color-primary)]" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-[var(--color-text-muted)]">{spec.label}</p>
-                      <p className="text-sm font-medium">{spec.value}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Description */}
-            {car.description && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Description</h3>
-                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{car.description}</p>
-              </div>
-            )}
-
-            {/* Features */}
-            {car.features?.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Features</h3>
-                <div className="flex flex-wrap gap-2">
-                  {car.features.map((f, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-text-secondary)]">
-                      {f}
+            {regularFeatures.length > 0 && (
+              <>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Key Features & Highlights</h3>
+                <div className="flex flex-wrap gap-3">
+                  {regularFeatures.map((feat, i) => (
+                    <span key={`feat-${i}`} className="bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
+                      {feat}
                     </span>
                   ))}
                 </div>
-              </div>
+              </>
             )}
-
-            {/* CTA Buttons */}
-            {car.status !== 'sold' && (
-              <div className="flex gap-3">
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-whatsapp flex-1 justify-center">
-                  <MessageCircle size={18} /> Inquire on WhatsApp
-                </a>
-                <a href="tel:+919876543210" className="btn-outline flex-1 justify-center">
-                  Call Us
-                </a>
-              </div>
-            )}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Related Cars */}
-        {related.length > 0 && (
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: 'var(--font-outfit)' }}>
-              Similar <span className="gradient-text">Cars</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {related.map((c, i) => (
-                <CarCard key={c._id} car={c} index={i} />
-              ))}
+        {/* ════ RIGHT COLUMN: Info ════ */}
+        <div className="lg:col-span-5 relative">
+          <div 
+            ref={rightColumnRef}
+            className="lg:sticky flex flex-col gap-6"
+            style={{ top: stickyTop }}
+          >
+            
+            {/* Title & Price */}
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="bg-white/10 text-gray-300 px-2 py-1 rounded text-[10px] font-bold tracking-widest uppercase border border-white/10">
+                  {car.condition || 'Used'}
+                </span>
+                {(car.registration || car.registrationState) && (
+                  <span className="text-gray-400 text-xs font-medium uppercase">
+                    RTO: {car.registration || car.registrationState}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-[40px] text-white font-bold mb-3 leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
+                {title}
+              </h1>
+              <p className="text-3xl font-bold text-purple-400 mb-5">
+                {formatPrice(car.price)}
+              </p>
+              
+              {/* Loan Info */}
+              {isLoanAvailable && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-xl py-3 px-5">
+                    <IconShieldCheck className="text-purple-400" size={20} />
+                    <span className="text-sm font-bold text-purple-400 uppercase tracking-wide">
+                      Loan Available
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          </section>
-        )}
+
+            {/* Specs Card (Bento Grid) */}
+            <div className="bg-white/[0.03] backdrop-blur-[20px] border border-white/10 rounded-2xl p-6 shadow-[0_0_30px_rgba(124,58,237,0.05)]">
+              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconCalendarMonth size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Year</p>
+                    <p className="text-base text-white font-semibold">{car.year || 'N/A'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconDashboard size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Kilometers</p>
+                    <p className="text-base text-white font-semibold">{car.kms ? formatKms(car.kms) : 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconGasStation size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Fuel Type</p>
+                    <p className="text-base text-white font-semibold">{car.fuelType || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconManualGearbox size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Transmission</p>
+                    <p className="text-base text-white font-semibold">{car.transmission || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconUser size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Owners</p>
+                    <p className="text-base text-white font-semibold">{car.owners || '1st Owner'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-purple-500/20 p-2.5 rounded-xl text-purple-400">
+                    <IconShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium mb-1 uppercase tracking-wider">Insurance</p>
+                    <p className="text-base text-white font-semibold">{car.insurance || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicator */}
+            <div className="flex items-center gap-4 bg-[#12121f] border border-purple-500/30 rounded-xl p-5 mt-2 shadow-lg">
+              <IconShieldCheck size={32} className="text-purple-400 shrink-0" />
+              <div>
+                <p className="font-bold text-white">Hariram Certified Pre-Owned</p>
+                <p className="text-sm text-gray-400 mt-0.5">150-Point Inspection Completed</p>
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col gap-4 mt-2">
+              <a 
+                href={getCarInquiryLink(car, process.env.NEXT_PUBLIC_WHATSAPP || '+919898558222')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 transform active:scale-[0.98] ${
+                  isSold 
+                  ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700' 
+                  : 'bg-[#25D366] text-black hover:bg-[#20bd5a] shadow-[0_0_20px_rgba(37,211,102,0.2)] hover:shadow-[0_0_30px_rgba(37,211,102,0.4)]'
+                }`}
+                onClick={(e) => isSold && e.preventDefault()}
+              >
+                <IconBrandWhatsapp size={22} />
+                {isSold ? 'Vehicle Sold' : 'Chat on WhatsApp'}
+              </a>
+              
+              <a 
+                href="tel:+919373482016"
+                className="w-full bg-white/5 border border-white/10 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-md transform active:scale-[0.98]"
+              >
+                <IconPhoneCall size={22} />
+                Call Us Now
+              </a>
+            </div>
+            
+          </div>
+        </div>
       </div>
 
-      {/* Lightbox */}
-      {lightbox && car.images?.length > 0 && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightbox(false)}>
-          <button className="absolute top-4 right-4 text-white/80 hover:text-white" onClick={() => setLightbox(false)}>
-            <X size={28} />
-          </button>
-          <button
-            className="absolute left-4 text-white/80 hover:text-white"
-            onClick={(e) => { e.stopPropagation(); setActiveImage((i) => (i - 1 + car.images.length) % car.images.length); }}
-          >
-            <ChevronLeft size={36} />
-          </button>
-          <div className="relative w-[90vw] h-[80vh]" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={getOptimizedImage(car.images[activeImage]?.url, 1600)}
-              alt={car.title}
-              fill
-              className="object-contain"
-            />
+      {/* ════ Similar Cars Section ════ */}
+      {similarCars.length > 0 && (
+        <section className="mt-32 border-t border-white/10 pt-16">
+          <div className="flex justify-between items-end mb-10">
+            <h2 className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-outfit)' }}>Similar Vehicles</h2>
+            <Link href={`/catalog?make=${car.make}`} className="text-purple-400 font-bold hover:underline flex items-center gap-1 group">
+              View All {car.make} <IconArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
-          <button
-            className="absolute right-4 text-white/80 hover:text-white"
-            onClick={(e) => { e.stopPropagation(); setActiveImage((i) => (i + 1) % car.images.length); }}
-          >
-            <ChevronRight size={36} />
-          </button>
-        </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {similarCars.map((similarCar, i) => (
+              <CarCard key={similarCar._id} car={similarCar} index={i} />
+            ))}
+          </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }
