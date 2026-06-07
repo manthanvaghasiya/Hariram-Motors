@@ -182,18 +182,25 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="mt-8 flex flex-col items-start gap-3 w-full"
+            className="mt-4 flex flex-col items-start gap-3 w-full"
           >
             {/* Mobile Trust Badge with Google Reviews */}
             <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                  <div key={i} className="relative">
+                    <svg className="w-3 h-3 text-white/30 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <div className="absolute top-0 left-0 overflow-hidden" style={{ width: i < 4 ? '100%' : i === 4 ? '30%' : '0%' }}>
+                      <svg className="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <span className="text-white font-bold text-xs mt-0.5">4.8</span>
+              <span className="text-white font-bold text-xs mt-0.5">4.3</span>
               <div className="h-3 w-[1px] bg-white/40 mx-0.5"></div>
               <span className="text-slate-200 text-[10px] uppercase tracking-wider font-semibold mt-0.5">Google Reviews</span>
             </div>
@@ -345,7 +352,7 @@ export default function HeroSection() {
           DESKTOP CONTENT (Hidden on mobile)
       ════════════════════════════════════════════════════════════════ */}
       <motion.div
-        className="hidden md:flex flex-col items-start justify-center relative z-10 w-full max-w-7xl mx-auto px-8 md:px-12 -mt-16"
+        className="hidden md:flex flex-col items-start justify-center relative z-10 w-full max-w-7xl mx-auto px-8 md:px-12 mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -367,25 +374,31 @@ export default function HeroSection() {
           {/* Trust Badges & Details (Desktop) */}
           <motion.div
             variants={itemVariants}
-            className="mt-10 flex flex-row items-center justify-start gap-6"
+            className="mt-5 flex flex-row items-center justify-start gap-6"
           >
             <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 group hover:bg-black/60 transition-all duration-300 shadow-xl cursor-default">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <motion.svg
+                  <motion.div
                     key={i}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + (i * 0.1) }}
-                    className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]"
-                    viewBox="0 0 20 20"
+                    className="relative"
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </motion.svg>
+                    <svg className="w-4 h-4 text-white/30 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <div className="absolute top-0 left-0 overflow-hidden" style={{ width: i < 4 ? '100%' : i === 4 ? '30%' : '0%' }}>
+                      <svg className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-white font-bold text-sm tracking-wide">4.8 Rating</span>
+                <span className="text-white font-bold text-sm tracking-wide">4.3 Rating</span>
                 <div className="h-4 w-[1px] bg-white/30"></div>
                 <span className="text-slate-300 text-xs uppercase tracking-widest font-semibold">Google Reviews</span>
               </div>
