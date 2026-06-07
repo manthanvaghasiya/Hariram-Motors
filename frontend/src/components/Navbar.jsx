@@ -2,17 +2,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
-import { IconMoon, IconSun, IconPhoneCall, IconBrandWhatsapp, IconMenu2, IconX } from '@tabler/icons-react';
+import { IconPhoneCall, IconBrandWhatsapp, IconMenu2, IconX } from '@tabler/icons-react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Prevent hydration mismatch for theme toggle
   useEffect(() => {
     setMounted(true);
   }, []);
