@@ -67,7 +67,7 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[var(--color-bg-dark)] flex">
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:sticky lg:top-0 h-screen shrink-0 inset-y-0 left-0 z-50 w-64 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-5 border-b border-[var(--color-border)] flex items-center justify-between">
@@ -101,20 +101,33 @@ export default function AdminLayout({ children }) {
             ))}
           </nav>
 
-          {/* User & Logout */}
+          {/* Premium User Profile & Logout */}
           <div className="p-4 border-t border-[var(--color-border)]">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-[#0f0f1a] text-xs font-bold">
-                {user.name?.[0]?.toUpperCase()}
+            <div className="bg-[#12121a] border border-white/5 rounded-2xl p-3 shadow-inner relative overflow-hidden group/profile">
+              {/* Subtle animated background glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-purple-500/5 blur-3xl opacity-0 group-hover/profile:opacity-100 transition-opacity duration-700"></div>
+              
+              <div className="flex items-center gap-3 relative z-10">
+                <div className="relative">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-60"></div>
+                  <div className="w-10 h-10 relative rounded-full bg-[#0a0a10] border border-white/10 flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-white truncate tracking-wide">{user.name}</p>
+                  <p className="text-xs text-purple-400/70 truncate font-medium">{user.email}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
-              </div>
+              
+              <button 
+                onClick={handleLogout} 
+                className="relative z-10 group flex items-center justify-center gap-2 w-full py-2.5 mt-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-xl transition-all duration-300 border border-red-500/10 hover:border-red-500/30"
+              >
+                <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" /> 
+                <span className="font-semibold text-sm">Secure Logout</span>
+              </button>
             </div>
-            <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-accent-red)] hover:bg-[rgba(248,113,113,0.1)] rounded-xl transition-colors">
-              <LogOut size={16} /> Logout
-            </button>
           </div>
         </div>
       </aside>
@@ -125,7 +138,7 @@ export default function AdminLayout({ children }) {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Mobile Top Bar (Hidden on Desktop) */}
         <header className="lg:hidden h-16 bg-[var(--color-bg-card)] border-b border-[var(--color-border)] flex items-center px-4">
           <button onClick={() => setSidebarOpen(true)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">

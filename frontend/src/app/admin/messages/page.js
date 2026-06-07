@@ -74,24 +74,24 @@ export default function AdminMessagesPage() {
     <div className="flex flex-col h-[calc(100vh-theme(spacing.20))] overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8">
       
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-6 lg:px-8 py-6 bg-white/[0.02] border-b border-white/5 shrink-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-6 lg:px-8 py-4 bg-white/[0.02] border-b border-white/5 shrink-0">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit)' }}>
             Customer Messages
           </h1>
-          <p className="text-sm text-gray-400">
+          <p className="text-xs text-gray-400">
             {messages.length} total • {messages.filter(m => !m.isRead).length} unread
           </p>
         </div>
         
-        <div className="relative w-full sm:w-72">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+        <div className="relative w-full sm:w-64">
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
           <input 
             type="text"
             placeholder="Search messages..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all placeholder-gray-500"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all placeholder-gray-500"
           />
         </div>
       </div>
@@ -100,18 +100,18 @@ export default function AdminMessagesPage() {
       <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative">
         
         {/* LEFT PANE: MESSAGE LIST */}
-        <div className={`lg:col-span-5 border-r border-white/5 bg-[#0a0a12]/50 flex flex-col overflow-hidden transition-transform duration-300 ${selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+        <div className={`lg:col-span-4 border-r border-white/5 bg-[#0a0a12]/50 flex flex-col overflow-hidden transition-transform duration-300 ${selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
             {loading ? (
               [...Array(6)].map((_, i) => (
-                <div key={i} className="h-24 bg-white/5 rounded-2xl animate-pulse border border-white/5" />
+                <div key={i} className="h-20 bg-white/5 rounded-xl animate-pulse border border-white/5" />
               ))
             ) : filteredMessages.length > 0 ? (
               filteredMessages.map((msg) => (
                 <div 
                   key={msg._id} 
                   onClick={() => handleSelectMessage(msg)}
-                  className={`p-4 rounded-2xl cursor-pointer border transition-all duration-300 relative overflow-hidden group ${
+                  className={`p-3 rounded-xl cursor-pointer border transition-all duration-300 relative overflow-hidden group ${
                     selectedMessage?._id === msg._id 
                       ? 'bg-purple-500/10 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)]' 
                       : !msg.isRead 
@@ -123,28 +123,28 @@ export default function AdminMessagesPage() {
                     <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
                   )}
                   
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex justify-between items-start mb-1.5">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <h3 className={`font-bold truncate font-['Outfit'] ${!msg.isRead ? 'text-white' : 'text-gray-300'}`}>
+                      <h3 className={`text-sm font-bold truncate font-['Outfit'] ${!msg.isRead ? 'text-white' : 'text-gray-300'}`}>
                         {msg.name}
                       </h3>
                       {!msg.isRead && (
-                        <span className="shrink-0 bg-purple-500/20 text-purple-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-500/30">
+                        <span className="shrink-0 bg-purple-500/20 text-purple-400 text-[9px] uppercase font-bold px-1.5 py-0.5 rounded border border-purple-500/30">
                           New
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-gray-500 whitespace-nowrap shrink-0 ml-2">
+                    <span className="text-[10px] text-gray-500 whitespace-nowrap shrink-0 ml-2 mt-0.5">
                       {new Date(msg.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                   
-                  <p className="text-sm text-gray-400 line-clamp-1 mb-3">
+                  <p className="text-xs text-gray-400 line-clamp-1 mb-2">
                     {msg.message}
                   </p>
                   
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <span className="flex items-center gap-1"><IconPhoneCall size={12} /> {msg.phone}</span>
+                  <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                    <span className="flex items-center gap-1"><IconPhoneCall size={10} /> {msg.phone}</span>
                   </div>
                 </div>
               ))
@@ -158,29 +158,29 @@ export default function AdminMessagesPage() {
         </div>
 
         {/* RIGHT PANE: MESSAGE DETAILS */}
-        <div className={`lg:col-span-7 bg-[#0a0a12] flex flex-col overflow-hidden relative ${!selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`lg:col-span-8 bg-[#0a0a12] flex flex-col overflow-hidden relative ${!selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
           {selectedMessage ? (
             <>
               {/* Details Header */}
-              <div className="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.01]">
+              <div className="p-4 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.01]">
                 
                 {/* Mobile Back Button */}
                 <button 
                   onClick={() => setSelectedMessage(null)}
-                  className="lg:hidden flex items-center gap-2 text-gray-400 hover:text-white mb-2"
+                  className="lg:hidden flex items-center gap-2 text-gray-400 hover:text-white mb-1"
                 >
-                  <IconX size={20} />
-                  <span className="text-sm font-bold uppercase tracking-wider">Close</span>
+                  <IconX size={18} />
+                  <span className="text-xs font-bold uppercase tracking-wider">Close</span>
                 </button>
 
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                    <IconUser size={24} />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                    <IconUser size={20} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white font-['Outfit']">{selectedMessage.name}</h2>
-                    <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-                      <IconCalendar size={12} />
+                    <h2 className="text-lg font-bold text-white font-['Outfit'] leading-tight">{selectedMessage.name}</h2>
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-0.5">
+                      <IconCalendar size={10} />
                       {new Date(selectedMessage.createdAt).toLocaleString('en-IN', { 
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
                       })}
@@ -191,57 +191,57 @@ export default function AdminMessagesPage() {
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => toggleRead(selectedMessage._id, selectedMessage.isRead)} 
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-gray-400 hover:text-white transition-all group"
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-gray-400 hover:text-white transition-all group"
                     title={selectedMessage.isRead ? 'Mark as Unread' : 'Mark as Read'}
                   >
-                    {selectedMessage.isRead ? <IconMailOpened size={18} /> : <IconMail size={18} className="text-purple-400" />}
+                    {selectedMessage.isRead ? <IconMailOpened size={16} /> : <IconMail size={16} className="text-purple-400" />}
                   </button>
                   <button 
                     onClick={() => handleDelete(selectedMessage._id)} 
-                    className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 transition-all"
+                    className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 transition-all"
                     title="Delete Message"
                   >
-                    <IconTrash size={18} />
+                    <IconTrash size={16} />
                   </button>
                 </div>
               </div>
 
               {/* Message Body */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-5">
                 
                 {/* Contact Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
-                      <IconPhoneCall size={20} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
+                      <IconPhoneCall size={16} />
                     </div>
                     <div className="overflow-hidden">
-                      <div className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Phone</div>
-                      <div className="text-white font-['Inter'] truncate">{selectedMessage.phone}</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Phone</div>
+                      <div className="text-sm text-white font-['Inter'] truncate">{selectedMessage.phone}</div>
                     </div>
                   </div>
                   
                   {selectedMessage.email && (
-                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0">
-                        <IconMail size={20} />
+                    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0">
+                        <IconMail size={16} />
                       </div>
                       <div className="overflow-hidden">
-                        <div className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Email</div>
-                        <div className="text-white font-['Inter'] truncate">{selectedMessage.email}</div>
+                        <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Email</div>
+                        <div className="text-sm text-white font-['Inter'] truncate">{selectedMessage.email}</div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Message Content */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <IconMessageCircle size={18} className="text-purple-400" />
-                    <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider">Message</h3>
+                <div className="mb-6">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <IconMessageCircle size={14} className="text-purple-400" />
+                    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Message</h3>
                   </div>
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-gray-300 font-['Inter'] leading-relaxed whitespace-pre-wrap shadow-inner relative">
-                    <IconMessageCircle className="absolute top-4 right-4 text-white/5" size={64} />
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 text-gray-300 font-['Inter'] text-sm leading-relaxed whitespace-pre-wrap shadow-inner relative">
+                    <IconMessageCircle className="absolute top-3 right-3 text-white/5" size={48} />
                     <span className="relative z-10">{selectedMessage.message}</span>
                   </div>
                 </div>
@@ -249,22 +249,22 @@ export default function AdminMessagesPage() {
               </div>
 
               {/* Action Footer */}
-              <div className="p-6 border-t border-white/5 bg-[#0a0a12]/80 backdrop-blur-md">
-                <div className="flex flex-col sm:flex-row gap-4">
+              <div className="p-4 border-t border-white/5 bg-[#0a0a12]/80 backdrop-blur-md">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <a 
                     href={getWhatsAppLink(selectedMessage.phone, 'Hi, I received your message on Hariram Motors.')}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/20 text-[#25D366] py-3.5 rounded-xl font-bold transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/20 text-[#25D366] py-2.5 rounded-lg text-sm font-bold transition-all"
                   >
-                    <IconBrandWhatsapp size={20} />
+                    <IconBrandWhatsapp size={16} />
                     Reply on WhatsApp
                   </a>
                   
                   <a 
                     href={`tel:${selectedMessage.phone}`}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 py-3.5 rounded-xl font-bold transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 py-2.5 rounded-lg text-sm font-bold transition-all"
                   >
-                    <IconPhoneCall size={20} />
+                    <IconPhoneCall size={16} />
                     Call Customer
                   </a>
                 </div>

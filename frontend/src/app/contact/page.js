@@ -254,7 +254,7 @@ export default function ContactPage() {
             <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
               <div className="absolute inset-0 bg-purple-900/20 mix-blend-color z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.089452033878!2d72.88098191493541!3d21.228229885890886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04f4b23838501%3A0xc3fce6c50ec33575!2sHariram%20Motors!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                src="https://maps.google.com/maps?q=Hariram+Motors,+Simada+Canal,+BRTS+Rd,+near+Setubandh+Hills,+Surat,+Gujarat+395006&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -264,17 +264,24 @@ export default function ContactPage() {
                 className="grayscale-[30%] contrast-125 scale-[1.02] group-hover:scale-100 transition-transform duration-700"
               />
               {/* Map Overlay Label */}
-              <div className="absolute bottom-6 left-6 bg-[#05050A]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 z-20 flex items-center gap-4 shadow-2xl">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 border border-purple-500/30">
+              <a 
+                href="https://maps.app.goo.gl/x78uQPe6dTPCW4uE6"
+                target="_blank" rel="noopener noreferrer"
+                className="absolute bottom-6 left-6 bg-[#05050A]/90 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 rounded-2xl p-4 sm:p-5 z-20 flex items-center gap-4 shadow-2xl transition-all group/maplink hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+              >
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 border border-purple-500/30 group-hover/maplink:bg-purple-500 group-hover/maplink:text-white transition-colors">
                   <IconMapPin size={24} />
                 </div>
                 <div>
-                  <h3 className="font-['Outfit'] font-bold text-white text-lg mb-0.5">Hariram Motors</h3>
-                  <div className="text-sm text-gray-400 font-medium leading-tight max-w-[200px]">
-                    Simada Canal, BRTS Rd, near Setubandh Hills, Surat 395006
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="font-['Outfit'] font-bold text-white text-lg">Hariram Motors</h3>
+                    <IconArrowRight size={14} className="text-purple-400 group-hover/maplink:translate-x-1 transition-transform" />
+                  </div>
+                  <div className="text-sm text-gray-400 font-medium leading-tight max-w-[250px] group-hover/maplink:text-gray-300 transition-colors">
+                    Hariram Motors ,Simada to, Canal, BRTS Rd, near Setubandh Hills, Surat, Gujarat 395006
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
           </motion.div>
 
