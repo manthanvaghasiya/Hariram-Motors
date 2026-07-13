@@ -4,6 +4,7 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 import { upload, uploadToCloudinary, deleteFromCloudinary } from '../config/cloudinary.js';
 
 const router = express.Router();
+// Trigger nodemon restart
 
 // ── GET /api/cars — Public listing with filters ──
 router.get('/', async (req, res) => {
@@ -69,16 +70,22 @@ router.get('/', async (req, res) => {
 // ── GET /api/cars/filters — Get makes and brand-model map ──
 router.get('/filters', async (_req, res) => {
   try {
-    const makes = await Car.distinct('make');
+    const activeFilter = { status: { $ne: 'sold' } };
+    const makes = await Car.distinct('make', activeFilter);
+    const fuelTypes = await Car.distinct('fuelType', activeFilter);
+    const bodyTypes = await Car.distinct('bodyType', activeFilter);
     
     // Aggregate to get unique models per make
     const brandModelMap = await Car.aggregate([
+      { $match: activeFilter },
       { $group: { _id: '$make', models: { $addToSet: '$model' } } }
     ]);
     
     res.json({
       data: {
-        makes: makes.sort(),
+        makes: makes.filter(Boolean).sort(),
+        fuelTypes: fuelTypes.filter(Boolean).sort(),
+        bodyTypes: bodyTypes.filter(Boolean).sort(),
         brandModelMap
       }
     });
@@ -97,10 +104,20 @@ router.get('/brands', async (_req, res) => {
   }
 });
 
-// ── GET /api/cars/:slug — Single car by slug ──
+// ── GET /api/cars/:slug — Single car by slug or ID ──
 router.get('/:slug', async (req, res) => {
   try {
-    const car = await Car.findOne({ slug: req.params.slug });
+    const { slug } = req.params;
+    let car;
+    
+    if (/^[0-9a-fA-F]{24}$/.test(slug)) {
+      car = await Car.findById(slug);
+    }
+    
+    if (!car) {
+      car = await Car.findOne({ slug });
+    }
+    
     if (!car) return res.status(404).json({ error: 'Car not found' });
     res.json(car);
   } catch (error) {
@@ -113,9 +130,12 @@ router.post('/', protect, adminOnly, upload.array('images', 20), async (req, res
   try {
     const carData = { ...req.body };
 
-    // Parse features if sent as JSON string
+    // Parse features and badges if sent as JSON string
     if (typeof carData.features === 'string') {
       try { carData.features = JSON.parse(carData.features); } catch { /* keep as is */ }
+    }
+    if (typeof carData.badges === 'string') {
+      try { carData.badges = JSON.parse(carData.badges); } catch { /* keep as is */ }
     }
 
     // Upload images to Cloudinary
@@ -149,6 +169,9 @@ router.put('/:id', protect, adminOnly, upload.array('images', 20), async (req, r
 
     if (typeof updateData.features === 'string') {
       try { updateData.features = JSON.parse(updateData.features); } catch { /* keep as is */ }
+    }
+    if (typeof updateData.badges === 'string') {
+      try { updateData.badges = JSON.parse(updateData.badges); } catch { /* keep as is */ }
     }
 
     // Handle existing images (kept)

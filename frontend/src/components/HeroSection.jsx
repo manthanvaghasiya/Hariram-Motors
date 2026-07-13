@@ -113,64 +113,70 @@ export default function HeroSection() {
   const imageVariants = {
     hidden: { scale: 1.1, opacity: 0 },
     visible: {
-      scale: 1,
+      scale: 1.05,
       opacity: 1,
       transition: {
-        duration: 1.5,
-        ease: "easeOut"
+        opacity: { duration: 1.5, ease: "easeOut" },
+        scale: { duration: 30, repeat: Infinity, repeatType: "reverse", ease: "linear" }
       }
     }
   };
 
   return (
-    <section className="relative flex flex-col min-h-[60vh] md:min-h-[85vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#0a0a12] md:bg-transparent overflow-hidden pt-16">
+    <section className="relative flex flex-col h-[480px] sm:h-[550px] md:h-auto md:min-h-[70vh] md:flex-row md:items-center font-['Inter',sans-serif] bg-[#050508] z-20">
 
       {/* ════════════════════════════════════════════════════════════════
           DESKTOP BACKGROUND (Hidden on mobile)
       ════════════════════════════════════════════════════════════════ */}
-      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
+      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden bg-[#050508]">
         <motion.img
           initial="hidden"
           animate="visible"
           variants={imageVariants}
-          src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop"
+          src="/images/hero_bg_desktop.png"
           alt="Premium Car"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-[center_60%] origin-[center_60%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a12] via-[#0a0a12]/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a12]/95 via-[#0a0a12]/40 to-transparent"></div>
       </div>
 
       {/* ════════════════════════════════════════════════════════════════
           MOBILE 100DVH LUXURY POSTER (Hidden on desktop)
       ════════════════════════════════════════════════════════════════ */}
-      <div className="md:hidden absolute inset-0 w-full h-[60vh] z-0 overflow-hidden">
+      <div className="md:hidden absolute inset-0 w-full h-full z-0 overflow-hidden bg-[#050508]">
         <motion.img
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.8, ease: "easeOut" }}
-          src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?w=800&q=80"
+          initial={{ scale: 1.1, opacity: 0, y: -40 }}
+          animate={{ scale: 1.05, opacity: 1, y: -40 }}
+          transition={{
+            opacity: { duration: 1.8, ease: "easeOut" },
+            scale: { duration: 30, repeat: Infinity, repeatType: "reverse", ease: "linear" }
+          }}
+          src="/images/hero_bg_mobile.png"
           alt="Premium Car"
-          className="absolute inset-0 w-full h-full object-cover object-center z-0"
+          className="absolute inset-0 w-full h-full object-cover object-bottom z-0 origin-bottom"
         />
         {/* Deep cinematic vignette gradient */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/40 to-[#0a0a12]/70"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0a0a12] via-[#0a0a12]/30 to-[#0a0a12]/70"></div>
 
         {/* Mobile Content Overlay */}
-        <div className="absolute inset-x-0 top-[20%] z-10 px-6 flex flex-col items-center text-center">
+        <div className="absolute inset-x-0 top-[12%] z-10 px-6 flex flex-col items-start text-left">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-4xl text-white font-bold tracking-tight leading-[1.1] drop-shadow-2xl" style={{ fontFamily: 'var(--font-outfit)' }}
+            className="text-4xl sm:text-5xl text-white font-medium tracking-wide leading-tight drop-shadow-lg" style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Your <span className="text-purple-500">Dream Car,</span><br />Now Within Reach!
+            Your <span className="relative inline-block font-bold">
+              <span className="absolute left-0 top-0 text-white [-webkit-text-stroke:2px_white] drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]" aria-hidden="true">Dream Car,</span>
+              <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Dream Car,</span>
+            </span> Now Within Reach!
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="mt-4 text-white/80 text-sm font-medium tracking-wide max-w-[300px]"
+            className="mt-4 text-white/95 text-sm font-semibold tracking-wide max-w-[320px] drop-shadow-md"
           >
             Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
           </motion.p>
@@ -179,18 +185,25 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="mt-8 flex flex-col items-center gap-3 w-full"
+            className="mt-4 flex flex-col items-start gap-3 w-full"
           >
             {/* Mobile Trust Badge with Google Reviews */}
             <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                  <div key={i} className="relative">
+                    <svg className="w-3 h-3 text-white/30 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <div className="absolute top-0 left-0 overflow-hidden" style={{ width: i < 4 ? '100%' : i === 4 ? '30%' : '0%' }}>
+                      <svg className="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <span className="text-white font-bold text-xs mt-0.5">4.8</span>
+              <span className="text-white font-bold text-xs mt-0.5">4.3</span>
               <div className="h-3 w-[1px] bg-white/40 mx-0.5"></div>
               <span className="text-slate-200 text-[10px] uppercase tracking-wider font-semibold mt-0.5">Google Reviews</span>
             </div>
@@ -266,7 +279,7 @@ export default function HeroSection() {
                     value={selectedBrand}
                     onChange={handleBrandChange}
                     disabled={isLoading}
-                    className="w-full h-14 pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all disabled:opacity-50"
+                    className="w-full h-[52px] pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all disabled:opacity-50 text-base"
                   >
                     <option value="" className="text-black">{isLoading ? 'Loading...' : 'Any Brand'}</option>
                     {availableBrands.map(brand => (
@@ -288,7 +301,7 @@ export default function HeroSection() {
                     value={selectedModel}
                     onChange={(e) => setSelectedModel(e.target.value)}
                     disabled={isLoading || availableModels.length === 0}
-                    className="w-full h-14 pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all disabled:opacity-50"
+                    className="w-full h-[52px] pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all disabled:opacity-50 text-base"
                   >
                     <option value="" className="text-black">{isLoading ? 'Loading...' : 'Any Model'}</option>
                     {availableModels.map(model => (
@@ -309,7 +322,7 @@ export default function HeroSection() {
                   <select
                     value={selectedBudget}
                     onChange={(e) => setSelectedBudget(e.target.value)}
-                    className="w-full h-14 pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                    className="w-full h-[52px] pl-14 pr-10 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold appearance-none focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-base"
                   >
                     <option value="" className="text-black">No Limit</option>
                     <option value="0-500000" className="text-black">Under ₹5 Lakh</option>
@@ -342,21 +355,24 @@ export default function HeroSection() {
           DESKTOP CONTENT (Hidden on mobile)
       ════════════════════════════════════════════════════════════════ */}
       <motion.div
-        className="hidden md:block relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24"
+        className="hidden md:flex flex-col items-start justify-center relative z-10 w-full max-w-7xl mx-auto px-8 md:px-12 mt-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        <div className="max-w-3xl text-left">
+        <div className="max-w-3xl text-left flex flex-col items-start">
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl text-white font-bold tracking-tight leading-[1.1] drop-shadow-2xl" style={{ fontFamily: 'var(--font-outfit)' }}
+            className="text-5xl sm:text-6xl md:text-7xl text-white font-medium tracking-wide leading-[1.15] drop-shadow-xl" style={{ fontFamily: 'var(--font-outfit)' }}
           >
-            Your <span className="text-purple-500">Dream Car,</span><br />Now Within Your Reach!
+            Your <span className="relative inline-block font-bold">
+              <span className="absolute left-0 top-0 text-white [-webkit-text-stroke:4px_white] drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]" aria-hidden="true">Dream Car,</span>
+              <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-500 to-blue-500">Dream Car,</span>
+            </span> Now Within Your Reach!
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className="text-xl text-slate-200 mt-6 max-w-2xl font-medium leading-relaxed drop-shadow-md"
+            className="text-lg md:text-xl text-slate-200 mt-6 max-w-2xl font-medium leading-relaxed drop-shadow-md"
           >
             Surat&apos;s premier destination for curated luxury and certified pre-owned vehicles. Built on trust, driven by quality.
           </motion.p>
@@ -364,26 +380,32 @@ export default function HeroSection() {
           {/* Trust Badges & Details (Desktop) */}
           <motion.div
             variants={itemVariants}
-            className="mt-8 flex items-center gap-8"
+            className="mt-5 flex flex-row items-center justify-start gap-6"
           >
-            <div className="flex items-center gap-3 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 group hover:bg-white/10 transition-all duration-300 cursor-default">
+            <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 group hover:bg-black/60 transition-all duration-300 shadow-xl cursor-default">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <motion.svg
+                  <motion.div
                     key={i}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + (i * 0.1) }}
-                    className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]"
-                    viewBox="0 0 20 20"
+                    className="relative"
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </motion.svg>
+                    <svg className="w-4 h-4 text-white/30 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <div className="absolute top-0 left-0 overflow-hidden" style={{ width: i < 4 ? '100%' : i === 4 ? '30%' : '0%' }}>
+                      <svg className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-white font-bold text-sm tracking-wide">4.8 Rating</span>
-                <div className="h-4 w-[1px] bg-white/20"></div>
+                <span className="text-white font-bold text-sm tracking-wide">4.3 Rating</span>
+                <div className="h-4 w-[1px] bg-white/30"></div>
                 <span className="text-slate-300 text-xs uppercase tracking-widest font-semibold">Google Reviews</span>
               </div>
             </div>
@@ -391,11 +413,11 @@ export default function HeroSection() {
             <motion.button
               onClick={() => router.push('/contact')}
               whileHover={{ x: 5 }}
-              className="flex items-center gap-2.5 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+              className="flex items-center gap-2.5 px-5 py-2.5 bg-purple-600/20 backdrop-blur-md rounded-full border border-purple-500/30 hover:bg-purple-600/40 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group shadow-xl"
             >
-              <MapPin className="w-4 h-4 text-purple-400 shrink-0" />
-              <span className="text-white font-semibold text-sm tracking-wide group-hover:text-purple-400 transition-colors">Varachha, Surat</span>
-              <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-purple-400 group-hover:translate-x-1 transition-all duration-300" />
+              <MapPin className="w-5 h-5 text-purple-400 shrink-0" />
+              <span className="text-white font-semibold text-sm tracking-wide group-hover:text-white transition-colors">Varachha, Surat</span>
+              <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
             </motion.button>
           </motion.div>
         </div>
@@ -408,10 +430,10 @@ export default function HeroSection() {
         initial="hidden"
         animate="visible"
         variants={searchBarVariants}
-        className="hidden md:block absolute bottom-3 left-0 right-0 px-8 md:px-12 z-20"
+        className="hidden md:block absolute -bottom-[4.5rem] left-0 right-0 px-8 md:px-12 z-40"
       >
-        <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5),0_16px_32px_-8px_rgba(147,51,234,0.15)] rounded-[2rem] p-6">
-          <div className="grid grid-cols-4 gap-6 items-end">
+        <div className="max-w-6xl mx-auto bg-[#0a0a12]/40 backdrop-blur-3xl border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6),0_0_32px_rgba(147,51,234,0.15)] rounded-[2rem] p-4 lg:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-end">
             {/* Brand */}
             <div className="relative group">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none z-10 transition-transform duration-300 group-focus-within:scale-110">
